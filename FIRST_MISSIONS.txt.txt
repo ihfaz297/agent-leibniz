@@ -1,0 +1,49 @@
+Two weeks, four missions, one gate. Everything else waits.
+
+M1 — Base theory (Lean person, hardest, start today)
+
+Precalc.lean. Polynomials over ℚ, root/factor theorem, ordered field lemmas. Explicit import whitelist, zero Mathlib.Analysis.*, enforced by a grep in CI.
+
+Done when: the file compiles and you can state a tangent-line problem in it.
+Kill signal: by day 5 you're still fighting imports, or every useful lemma drags analysis in transitively. Then the base is wrong and you redesign it before anything else moves.
+
+M2 — The manual proof (same person or a second, after M1 stands)
+
+Take f(x) = x³ − 2x, tangent at x = 1. Prove it twice: once by the double-root grind in the raw base, once with a hand-written def D plus linearity and product-rule lemmas. Record tactic count and proof term size for both.
+
+Done when: you have two numbers.
+This is the single most important deliverable of the fortnight. If those numbers are close, your entire scoring premise is false and v1 as designed doesn't work. Everything downstream assumes this gap exists. Find out in week 2, not month 3.
+
+M3 — Harness (one person, parallel, no Lean knowledge needed)
+
+Python. Takes a Lean file, compiles it, returns (exit_code, error, tactic_count, term_size). Plus a canary suite — (2:ℚ) < 1, (0:ℚ) = 1 — that tries to prove known-false things and screams if any succeed. Plus a #print axioms check.
+
+Done when: it correctly scores a good file, a broken file, and a poisoned one.
+Zero intelligence in this. No LLM anywhere near it.
+
+M4 — Problem bank (one person, parallel)
+
+20 problems: tangent lines, extrema on intervals, Σkⁿ closed forms. Each needs a base-theory-statable Lean statement and a checkable answer. Split 14 train / 6 held-out, and write the held-out six before you see any agent output. Label each with whether you believe it's grindable in the base.
+
+Done when: 20 statements typecheck against M1's base.
+
+Sequencing
+
+Week 1: M1 alone on the critical path; M3 and M4 run fully independent of it.
+Week 2: M2 lands. M4's statements get checked against the real base. M3 tested against M2's two files.
+
+The gate — end of week 2
+
+Three questions, honest answers:
+
+Does D measurably compress proofs? (M2's two numbers)
+Does the harness score files correctly and catch poison? (M3)
+Are 20 problems statable in the base? (M4)
+
+Three yeses → week 3 you attach the proposer. Any no → fix that thing, and nothing else, until it's a yes.
+
+Explicitly not doing
+
+Population search. Bottleneck detection. Tier B and the amber lane. Obfuscation ablation. Any proposal document. More reading beyond Minimo, once, in someone's downtime.
+
+The one you should be nervous about is M2, and it's worth saying why: it's the only mission that can return an answer you don't want. M1, M3, M4 are labor — they'll get done. M2 is a measurement, and measurements can come back bad. Which is exactly why it's scheduled in week 2 instead of month 3.
