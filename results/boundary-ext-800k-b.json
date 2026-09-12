@@ -1,0 +1,74 @@
+[
+ {
+  "problem": "x^3 + x^2 + x at a",
+  "config": "base",
+  "closure": 1,
+  "budget": 800000,
+  "status": "depth_exhausted",
+  "steps": null,
+  "nodes": 92294,
+  "depth_reached": 12,
+  "secs": 17.8,
+  "answer": null
+ },
+ {
+  "problem": "x^3 + x^2 + x at a",
+  "config": "base",
+  "closure": 3,
+  "budget": 800000,
+  "status": "found",
+  "steps": 5,
+  "nodes": 154708,
+  "depth_reached": 5,
+  "secs": 50.7,
+  "answer": "(1 + a + a + a^2 + a^2 + a^2)"
+ },
+ {
+  "problem": "x^3 + x^2 + x at a",
+  "config": "base",
+  "closure": 2,
+  "budget": 800000,
+  "status": "found",
+  "steps": 8,
+  "nodes": 282344,
+  "depth_reached": 8,
+  "secs": 81.6,
+  "answer": "(1 + a + a + a^2 + a^2 + a^2)"
+ },
+ {
+  "problem": "x^4 + x^3 + x^2 + x at a",
+  "config": "base",
+  "closure": 1,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 12,
+  "secs": 321.5,
+  "answer": null
+ },
+ {
+  "problem": "x^4 + x^3 + x^2 + x at a",
+  "config": "base",
+  "closure": 2,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 7,
+  "secs": 322.1,
+  "answer": null
+ },
+ {
+  "problem": "x^4 + x^3 + x^2 + x at a",
+  "config": "base",
+  "closure": 3,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 5,
+  "secs": 368.4,
+  "answer": null
+ }
+]

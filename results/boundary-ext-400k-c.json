@@ -1,0 +1,74 @@
+[
+ {
+  "problem": "2x^4 - x^3 + 3x at a",
+  "config": "deriv",
+  "closure": 1,
+  "budget": 400000,
+  "status": "depth_exhausted",
+  "steps": null,
+  "nodes": 3653,
+  "depth_reached": 12,
+  "secs": 0.5,
+  "answer": null
+ },
+ {
+  "problem": "2x^4 - x^3 + 3x at a",
+  "config": "deriv",
+  "closure": 2,
+  "budget": 400000,
+  "status": "found",
+  "steps": 8,
+  "nodes": 10025,
+  "depth_reached": 8,
+  "secs": 1.0,
+  "answer": "(3 + (-3*a^2) + (8*a^3))"
+ },
+ {
+  "problem": "2x^4 - x^3 + 3x at a",
+  "config": "deriv",
+  "closure": 3,
+  "budget": 400000,
+  "status": "found",
+  "steps": 7,
+  "nodes": 12031,
+  "depth_reached": 7,
+  "secs": 1.2,
+  "answer": "(3 + (-3*a^2) + (8*a^3))"
+ },
+ {
+  "problem": "2x^4 - x^3 + 3x at a",
+  "config": "base",
+  "closure": 2,
+  "budget": 400000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 400001,
+  "depth_reached": 6,
+  "secs": 153.8,
+  "answer": null
+ },
+ {
+  "problem": "2x^4 - x^3 + 3x at a",
+  "config": "base",
+  "closure": 1,
+  "budget": 400000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 400001,
+  "depth_reached": 11,
+  "secs": 158.2,
+  "answer": null
+ },
+ {
+  "problem": "2x^4 - x^3 + 3x at a",
+  "config": "base",
+  "closure": 3,
+  "budget": 400000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 400001,
+  "depth_reached": 4,
+  "secs": 192.1,
+  "answer": null
+ }
+]
