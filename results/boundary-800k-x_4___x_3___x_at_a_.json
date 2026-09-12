@@ -1,0 +1,38 @@
+[
+ {
+  "problem": "x^4 + x^3 + x at a",
+  "config": "base",
+  "closure": 2,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 7,
+  "secs": 152.2,
+  "answer": null
+ },
+ {
+  "problem": "x^4 + x^3 + x at a",
+  "config": "base",
+  "closure": 1,
+  "budget": 800000,
+  "status": "depth_exhausted",
+  "steps": null,
+  "nodes": 757054,
+  "depth_reached": 12,
+  "secs": 160.0,
+  "answer": null
+ },
+ {
+  "problem": "x^4 + x^3 + x at a",
+  "config": "base",
+  "closure": 3,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 5,
+  "secs": 198.9,
+  "answer": null
+ }
+]

@@ -1,0 +1,38 @@
+[
+ {
+  "problem": "2x^3 - 3x^2 + x at a",
+  "config": "base",
+  "closure": 1,
+  "budget": 800000,
+  "status": "depth_exhausted",
+  "steps": null,
+  "nodes": 128260,
+  "depth_reached": 12,
+  "secs": 50.2,
+  "answer": null
+ },
+ {
+  "problem": "2x^3 - 3x^2 + x at a",
+  "config": "base",
+  "closure": 2,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 9,
+  "secs": 213.3,
+  "answer": null
+ },
+ {
+  "problem": "2x^3 - 3x^2 + x at a",
+  "config": "base",
+  "closure": 3,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 6,
+  "secs": 245.8,
+  "answer": null
+ }
+]

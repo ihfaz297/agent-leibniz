@@ -335,3 +335,93 @@ can grind — not around a gap between two numbers that both finish.
 gap. Bought: the knowledge that the k=2 scaling claim would not have survived a reviewer
 asking "and at k=3?", and one row — a sample of one — that is worth building the next
 bank around.
+
+---
+
+## 2026-09-12 (night) — Boundary bank, gate item 1. Four, not ten.
+
+**What we tried.** Sixteen candidates chosen by grid (degree {3,4} × terms {1,2,3} ×
+coefficients {unit, non-unit} × point {symbolic, numeric}), committed in `boundary.py`
+*before* any ran. Base and derivative at closure=1,2,3, node budget 400k, 96 searches on
+11 cores, 306 s. Raw results in `results/boundary-400k.json`. A CI workflow now exists
+that runs the same bank on a runner nobody touches and commits results back with the
+commit hash — not used for this run (2 cores vs 11), available for the next.
+
+**What happened.**
+
+| problem | k=1 base/deriv | k=2 | k=3 | bin |
+|---|---|---|---|---|
+| x³ + x at −1 | 8 / 6 | 5 / 4 | 3 / 3 | base grinds it |
+| 2x³ at a | 11 / 6 | 6 / 4 | 4 / 3 | base grinds it |
+| 2x³ at 2 | 10 / 6 | 5 / 4 | 4 / 3 | base grinds it |
+| x³ + x at a | 12 / 6 | 6 / 4 | 4 / 3 | base grinds it |
+| x⁴ − x at 1 | 9 / 8 | 5 / 5 | 3 / 4 | base grinds it |
+| x³ − x² + 1 at 2 | 9 / 10 | 5 / 6 | 4 / 5 | base grinds it |
+| x⁴ at −1 | 10 / 4 | 5 / 3 | 4 / 2 | base grinds it |
+| x⁴ at a | 12 / 4 | 6 / 3 | 4 / 2 | base grinds it |
+| 3x³ + 2x at a | depth / 10 | 7 / 6 | 5 / 5 | moves with closure |
+| x³ + x² + x at a | depth / 8 | 8 / 5 | 5 / 4 | moves with closure |
+| x³ − x² at a | depth / 9 | 8 / 5 | 5 / 5 | moves with closure |
+| 3x⁴ at a | depth / 6 | 7 / 4 | 5 / 3 | moves with closure |
+| **x⁴ + x² at a** | budget / 7 | budget / 4 | budget / 4 | **boundary** |
+| **x⁴ + x³ + x at a** | budget / 8 | budget / 5 | budget / 4 | **boundary** |
+| **2x³ − 3x² + x at a** | depth / 12 | budget / 7 | budget / 6 | **boundary** |
+| **2x⁴ + 3x² at a** | budget / 11 | budget / 6 | budget / 6 | **boundary** |
+
+8 / 4 / 4. Four candidates hold at every closure; the gate asked for ten. The 800k-budget
+half of the test is running on the four as this is written.
+
+**Three readings.**
+
+1. *The boundary is real but thin.* Where the base exhausts at all k, it does so
+   decisively — the derivative finishes in 4–12 and the base burns 400k nodes. But only a
+   quarter of a grid built to straddle the boundary actually lands past it. The band
+   between "base grinds" and "derivative also exhausts" is one or two terms wide.
+2. *"Moves with closure" is its own result.* Four problems exhaust the depth-12 cap at
+   k=1 and grind in 7–8 at k=2. Under the k=1 accounting they would have been counted as
+   boundary rows. They are not; they are the k=1 instrument being coarser than the k=2
+   one. This is the failure mode the gate was written to catch, and it caught four.
+3. *The base is a lot stronger than CLAUDE.md assumed.* "The cubic base path will
+   probably time out" — it does not; every single-term cubic and quartic grinds, and
+   `x⁴ at a` lands at exactly 12 at k=1, the third row this project has put on the cap
+   by accident. Free like-power cancellation in `canon` is doing most of the work.
+
+**Not decided yet:** whether four is enough. The gate says ten. The honest options are
+(a) four is the answer, gate fails on count, Track 1 is not started on this bank; (b)
+the grid is extended — degree 5, four terms — to find where the base's boundary sits at
+k=3, with the extension committed before running, as this one was. (b) is not editing
+the bank to be more representative; it is asking where the boundary is, which is the
+question. But it is a decision, and it is not being taken in this entry.
+
+**What it cost us.**
+
+- *Sixteen candidates, not twenty-four.* **Forfeit:** eight grid cells unrun, all
+  non-unit or three-term at a numeric point. The numeric-point axis is under-sampled
+  exactly where earlier entries said the base gets cheap.
+- *Parallel run, not CI.* **Forfeit:** the numbers were produced on a machine with a
+  hand on it. The workflow exists; the first CI-produced table has not been made.
+- *Budget-exceeded and depth-exhausted are both "exhausts".* **Forfeit:** they are not
+  the same thing. A depth exhaust at k=1 says the shortest path is longer than 12; a
+  budget exhaust says the search could not tell. Three of the four boundary rows are
+  budget exhausts at k=2,3, which is why the 800k run matters.
+
+**Addendum — 800k budget, base only, on the four.** All twelve cells exhausted. At k=1
+every row went from budget-exceeded (400k) to depth-exhausted (800k): the search
+*completed* depth 12 and found no path, which is the stronger statement. At k=2 and k=3
+all eight cells are still budget-exceeded at 800k, 140–250 s each.
+
+| problem | k=1 | k=2 | k=3 |
+|---|---|---|---|
+| x⁴ + x² at a | depth | budget | budget |
+| x⁴ + x³ + x at a | depth | budget | budget |
+| 2x³ − 3x² + x at a | depth | budget | budget |
+| 2x⁴ + 3x² at a | depth | budget | budget |
+
+**Gate item 1, as measured: four boundary rows, stable across closure=1,2,3 and across a
+doubled budget.** The gate asked for ten. Final bins on the sixteen: 8 grind / 4 move
+with closure / 4 boundary. Whether four is enough, or the grid is extended upward to find
+where the k=3 boundary sits, is the open decision — not taken here.
+
+**Forfeit:** the k=2,3 base cells are budget exhausts, not depth exhausts, at both
+budgets. "No path ≤ 12" is proven only at k=1. At k=2,3 what is proven is "not findable
+in 800k nodes," and someone with a bigger machine can re-ask.

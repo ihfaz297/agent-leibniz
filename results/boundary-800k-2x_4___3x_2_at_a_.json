@@ -1,0 +1,38 @@
+[
+ {
+  "problem": "2x^4 + 3x^2 at a",
+  "config": "base",
+  "closure": 1,
+  "budget": 800000,
+  "status": "depth_exhausted",
+  "steps": null,
+  "nodes": 547673,
+  "depth_reached": 12,
+  "secs": 143.8,
+  "answer": null
+ },
+ {
+  "problem": "2x^4 + 3x^2 at a",
+  "config": "base",
+  "closure": 2,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 7,
+  "secs": 182.3,
+  "answer": null
+ },
+ {
+  "problem": "2x^4 + 3x^2 at a",
+  "config": "base",
+  "closure": 3,
+  "budget": 800000,
+  "status": "budget_exceeded",
+  "steps": null,
+  "nodes": 800001,
+  "depth_reached": 5,
+  "secs": 217.1,
+  "answer": null
+ }
+]

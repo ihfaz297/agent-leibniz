@@ -71,11 +71,15 @@ def main() -> None:
     ap.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     ap.add_argument("--out", default="results/boundary.json")
     ap.add_argument("--closures", default="1,2,3")
+    ap.add_argument("--only", default=None, help="substring filter on problem name")
+    ap.add_argument("--configs", default="base,deriv")
     args = ap.parse_args()
     ks = [int(k) for k in args.closures.split(",")]
+    cfgs = args.configs.split(",")
 
     jobs = [(n, b, a, cfg, k, args.budget)
-            for n, b, a in CANDIDATES for k in ks for cfg in ("base", "deriv")]
+            for n, b, a in CANDIDATES if not args.only or args.only in n
+            for k in ks for cfg in cfgs]
     # slowest first so the pool tail is short
     jobs.sort(key=lambda j: (j[3] != "base", -j[4]))
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
