@@ -50,6 +50,22 @@ CANDIDATES = [
     ("2x^4 + 3x^2 at a",          poly(0, 0, 3, 0, 2),     V("a")),
 ]
 
+#: Extension, 2026-09-12 night, committed before running.  The first sixteen
+#: gave four boundary rows against a target of ten; three of the four were the
+#: largest quartics in the grid, so the boundary sits above where the grid
+#: stopped.  Eight more cells: degree 5, and four-term cubics/quartics.
+#: This is asking where the boundary is, not moving it.  LEDGER.md.
+CANDIDATES += [
+    ("x^5 at a",                  poly(0, 0, 0, 0, 0, 1),  V("a")),
+    ("2x^5 at a",                 poly(0, 0, 0, 0, 0, 2),  V("a")),
+    ("x^5 + x at a",              poly(0, 1, 0, 0, 0, 1),  V("a")),
+    ("x^5 + x^3 at a",            poly(0, 0, 0, 1, 0, 1),  V("a")),
+    ("x^5 - 2x^2 at 1",           poly(0, 0, -2, 0, 0, 1), C(1)),
+    ("x^4 + x^3 + x^2 + x at a",  poly(0, 1, 1, 1, 1),     V("a")),
+    ("x^5 + x^4 + x at a",        poly(0, 1, 0, 0, 1, 1),  V("a")),
+    ("2x^4 - x^3 + 3x at a",      poly(0, 3, 0, -1, 2),    V("a")),
+]
+
 
 def _job(args):
     name, body, at, config, k, budget = args
