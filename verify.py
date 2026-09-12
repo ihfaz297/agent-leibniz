@@ -345,7 +345,9 @@ def check_path(start: Term, path: list, env_vars=None, trials: int = 100,
     failures = []
     ref = 0
     for i in range(1, len(terms)):
-        if names[i] in ("R7.slope_dq", "R8.eval_h_zero", "B.bridge"):
+        # a closure step is "R7.slope_dq>R6.at_elim"; any non-identity rule
+        # anywhere in the chain resets the reference (search.py, `closure`)
+        if set(names[i].split(">")) & {"R7.slope_dq", "R8.eval_h_zero", "B.bridge"}:
             ref = i
             continue
         vs = sorted(free_vars(terms[ref]) | free_vars(terms[i]))

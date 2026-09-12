@@ -24,12 +24,25 @@ compression gap does not appear in Track 0, Track 1 is not worth building.
 ## Track 0 layout
 
 ```
-terms.py    Const, Var, Add, Mul, Pow as a tagged union
-canon.py    flatten Add/Mul to sorted n-ary multisets; canonicalize after every rewrite
-rules.py    base rules R1-R9; derivative rules D1-D5 + bridge B
-search.py   iterative deepening, depth cap 12, returns step count
-verify.py   sample ~100 random rational instantiations, compare both sides exactly
+terms.py       Const, Var, Add, Mul, Pow as a tagged union
+canon.py       flatten Add/Mul to sorted n-ary multisets; canonicalize after every rewrite
+rules.py       base rules R1-R8 (the power law went into canon); derivative D1-D5 + bridge B
+search.py      iterative deepening, depth cap 12, node budget 400k, returns step count;
+               `closure=k` lets k rules chained *inside one produced subterm* count as
+               one step -- the symmetric "derived lemma is one step" accounting
+verify.py      sample ~100 random rational instantiations, compare both sides exactly
+experiment.py  the training problems and the three-configuration driver
+heldout.py     the held-out set, FROZEN 2026-09-12; append-only, every append ledgered
+test_track0.py 25 tests; run before every ledger entry
+graveyard/     quarantined plans and documents, each with a header saying why
 ```
+
+**What Track 0 found (2026-09-12, see LEDGER.md).** The per-problem step-count gap is a
+rule-granularity artefact: under `closure=2` or `3` it is within ±1 on everything below
+degree 3, and no gap anywhere exceeds 2. The measurement that survives re-factoring is
+*whether the base can finish at all*. Any new number quoted from Track 0 says which
+`closure` it was computed under, and any new problem bank is built around the base's
+completion boundary, not around gaps between two searches that both complete.
 
 ## Non-negotiable constraints
 
@@ -42,7 +55,8 @@ verify.py   sample ~100 random rational instantiations, compare both sides exact
   rather than complete. That is the result we want, but we need one completing run first
   or we cannot distinguish "base is hard" from "base rules are incomplete."
 - **Held-out problems are written before any agent output is seen.** Never edit the
-  held-out set to be "more representative."
+  held-out set to be "more representative." Never raise the depth cap or node budget
+  because a row exhausted it -- an exhausted row is a result.
 
 ## Problem bank: four questions per problem
 
@@ -75,6 +89,13 @@ Date | what we tried | what happened | what it cost us
 The fourth column is the one that matters. Every design choice forfeits something.
 Write the forfeit down while making the choice, not four months later. This file
 becomes the limitations section.
+
+## Which documents are real
+
+CLAUDE.md is the plan. LEDGER.md is the record. Everything else -- chat logs, generated
+"system prompts", design conversations -- is input, and gets triaged like a candidate:
+kept (folded into one of the two files above), quarantined (`graveyard/`, with a header),
+or ignored. A plan that lives only in a chat log is not the plan.
 
 ## Working style
 

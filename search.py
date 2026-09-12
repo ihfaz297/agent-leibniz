@@ -63,24 +63,59 @@ def is_closed_form(t: Term) -> bool:
     return H not in free_vars(t)
 
 
-def successors(t: Term, rules) -> dict:
+def successors(t: Term, rules, closure: int = 1) -> dict:
     """{canonical successor term: name of the rule that got there}.
 
     Deduplicated, and self-loops dropped: a rewrite that canon undoes is not a
-    step, it is a no-op, and counting it would inflate every path."""
+    step, it is a no-op, and counting it would inflate every path.
+
+    `closure` > 1 admits *local* compositions as single steps: after a rule
+    fires at some position and produces `new_sub`, a further rule may fire
+    anywhere inside `new_sub` (canonicalized on its own first, which is what
+    the whole-term canon would do to it, since canon is bottom-up), and the
+    composite counts as one step.  Up to `closure` rules may chain this way.
+    The locality is the point: a global "any k steps = 1" would just divide
+    every path length by k and measure nothing.  Local closure is the
+    mechanical, rule-set-symmetric version of "a derived lemma is one step" --
+    D(c*u) -> c*D(u) falls out of D4-then-D1 without being written down, and
+    the base gets the same treatment for R6-then-R1 and friends.  Which rule
+    sets gain more is what it measures.  LEDGER.md 2026-09-12."""
     out: dict = {}
     for path, sub in positions(t):
         for r in rules:
             if r.root_only and path:
                 continue
             for new_sub in r.apply(sub):
-                try:
-                    nt = canon(replace_at(t, path, new_sub))
-                except ZeroDivisionError:
-                    continue
-                if nt != t and nt not in out:
-                    out[nt] = r.name
+                for names, final_sub in _local_chain(new_sub, rules, closure - 1,
+                                                     at_root=not path):
+                    try:
+                        nt = canon(replace_at(t, path, final_sub))
+                    except ZeroDivisionError:
+                        continue
+                    if nt != t and nt not in out:
+                        out[nt] = ">".join((r.name,) + names)
     return out
+
+
+def _local_chain(sub: Term, rules, remaining: int, at_root: bool):
+    """Yield (rule names, resulting subterm) for every chain of up to
+    `remaining` further rules fired strictly inside `sub`.  The empty chain
+    is always yielded first, so a plain single step is always available."""
+    yield (), sub
+    if remaining <= 0:
+        return
+    try:
+        sub = canon(sub)
+    except ZeroDivisionError:
+        return
+    for inner_path, inner in positions(sub):
+        for r in rules:
+            if r.root_only and (inner_path or not at_root):
+                continue
+            for new_inner in r.apply(inner):
+                nxt = replace_at(sub, inner_path, new_inner)
+                for names, final in _local_chain(nxt, rules, remaining - 1, at_root):
+                    yield (r.name,) + names, final
 
 
 def search(
@@ -89,6 +124,7 @@ def search(
     goal: Callable[[Term], bool] = is_closed_form,
     max_depth: int = DEFAULT_MAX_DEPTH,
     node_budget: int = DEFAULT_NODE_BUDGET,
+    closure: int = 1,
 ) -> SearchResult:
     start = canon(start)
     nodes = 0
@@ -108,7 +144,7 @@ def search(
             if prev is not None and prev <= depth:
                 return None
             seen[t] = depth
-            for nt, rname in successors(t, rules).items():
+            for nt, rname in successors(t, rules, closure).items():
                 nodes += 1
                 if nodes > node_budget:
                     raise BudgetExceeded

@@ -91,3 +91,247 @@ x³ at a completes in 10 steps, under the depth-12 cap. Free like-power cancella
 the 3x² − 5x + 1 gap from 1 to roughly 4. It is *not* covered by the "do not improve the
 base rule set" constraint — it changes the abstraction, not the base — but it is exactly
 the kind of tuning that manufactures the result we want. Not doing it unilaterally.
+
+---
+
+## 2026-09-12 — D6 measured and deferred; one plan quarantined
+
+**What we tried.**
+
+Two things, one of them housekeeping.
+
+*Housekeeping.* A Gemini-generated "system prompt" (MCTS + FunSearch + Qiskit "fidelity"
+as a verifier, under the borrowed name Minimo) had landed in the repo root. Moved to
+`graveyard/brainwash-gemini-2026-09.txt` with a header saying what it is. Not deleted:
+it is a clean specimen of the failure mode this project studies — a fluent, confident
+artifact with no falsifiable mechanism in it. Rule adopted: CLAUDE.md is the plan,
+LEDGER.md is the record, everything else is a chat log.
+
+*D6.* Measured the constant-multiple rule `D(c·u) → c·D(u)` (rational literal `c`) as
+a scratch candidate, without editing `rules.py`. Same three configurations, same oracle.
+
+**What happened.**
+
+| problem | base | deriv | deriv+D6 | gap | gap+D6 |
+|---|---|---|---|---|---|
+| x² at a | 8 | 4 | 4 | 4 | 4 |
+| x² at 3 | 7 | 4 | 4 | 3 | 3 |
+| 3x² − 5x + 1 at a | 12 | 11 | **9** | 1 | **3** |
+| x³ at a | 10 | 4 | 4 | 6 | 6 |
+| x³ − 2x at 1 | 8 | 8 | **7** | 0 | **1** |
+
+Sound on every path; oracle agrees. Last cycle's estimate of "roughly 4" was wrong; it
+is 3. D6 touches only the rows with non-unit coefficients, as it should.
+
+The 9-step path: B, D3, D1, D6, D2, D6, D5, D2, R6. Every step is doing something; there
+is no cleanup left. So 9 is the floor for this abstraction on this problem, and the base's
+12 is the base's floor under the current rules. A gap of 3 is what "linearity vs. grind"
+is worth on a three-term quadratic at a symbolic point. Smaller than we hoped.
+
+**Decision: D6 is not added this cycle.** Two reasons, one good and one decisive.
+
+The good reason for adding it: the derivative on ℚ[x] is *the* ℚ-linear derivation with
+D(x)=1. D3 is additivity; D6 is homogeneity. The current abstraction has half of linearity.
+That is a legitimate definitional argument and it will still be true next cycle.
+
+The decisive reason against, today: there is no held-out set. All five problems in
+`experiment.py` are training. We looked at the training row with the worst gap and found
+the rule that improves it — that is exactly the selection a held-out set exists to catch,
+and with no held-out set the definitional argument and post-hoc tuning are
+indistinguishable. Any lemma that helped would have had *some* story.
+
+Second, a symmetry the "do not improve the base" constraint does not cover: the base path
+spends four steps in `R1.distribute` and would also benefit from compound lemmas. If
+derived lemmas are admissible for the abstraction and not for the base, the gap measures
+our tuning budget.
+
+**Next cycle, in order.** (1) Write the held-out set, before any candidate touches it.
+(2) Write down the *policy*: is the abstraction its generating set only, or the
+generating set plus lemmas derivable in ≤ k of its own steps — and if the latter, the base
+gets the same allowance. (3) Run D6 through normal triage against held-out. It goes in
+with the held-out number or not at all.
+
+**What it cost us.**
+
+- *Deferring D6.* **Forfeit:** the 3x² − 5x + 1 row stays at gap 1 and reads as "the
+  abstraction barely helps on the one realistic polynomial." The honest caption is "we
+  withheld half of linearity"; that has to be said every time the table is shown.
+- *Measuring D6 on training before a held-out set existed.* **Forfeit:** we now know
+  which rule helps, and cannot un-know it. Whoever writes the held-out set writes it
+  knowing D6 exists. The mitigation is that held-out problems are chosen by the
+  four-question rubric, not by coefficient pattern, and that the set is fixed before
+  D6 is run on it — but the contamination is real and this line is the disclosure.
+- *Quarantine, not deletion, of the Gemini plan.* **Forfeit:** one more file for a new
+  reader to be confused by. Bought: a documented specimen, and a habit — plans get
+  triaged the same way candidates do.
+
+**Addendum, same day — held-out set frozen.** `heldout.py`, eight problems chosen by a
+degree × terms × coefficient × point grid. Base-only run to check Q1 predictions: all
+eight held (6, 10, 9, 12, 7, exhausted, 9, exhausted). Two decisions made at freeze:
+`x²/2 − 3x at a` sits exactly at the depth-12 cap and stays there — it completed, and
+moving it because of the number is the edit CLAUDE.md forbids. The two cubic rows
+exhaust the cap and the cap is not raised — an instrument adjusted after seeing the data
+is not an instrument. **Forfeit:** six informative rows out of eight, and one of the six
+is one accounting change away from becoming a seventh exhausted row. No `deriv` or D6
+numbers existed on this set at the time of freezing.
+
+**Addendum, same day — D1-D5+B on the frozen held-out set.**
+
+| problem | base | deriv | both | gap |
+|---|---|---|---|---|
+| 4x − 7 at a | 6 | 7 | 6 | **−1** |
+| x² + x at a | 10 | 6 | 6 | 4 |
+| 2x² at a | 9 | 6 | 6 | 3 |
+| x²/2 − 3x at a | 12 | 10 | 10 | 2 |
+| x² − 4 at 2 | 7 | 6 | 6 | 1 |
+| x³ + x² at a | exhausted | 7 | 7 | – |
+| x³ at −2 | 9 | 4 | 4 | 5 |
+| 2x³ − 3x² + x at a | exhausted | 12 | 12 | – |
+
+All paths sound, all answers match the oracle. Three readings:
+
+1. **The abstraction loses on the linear case.** On 4x − 7 the derivative path is one step
+   *longer* than the grind, and `both` takes the base route. Cause is the same
+   D4-then-cleanup cost as the 3x² − 5x + 1 training row: `D(4x)` costs D4 → D2 → D1
+   where the grind just distributes. This is the first negative gap the instrument has
+   produced and it is on the simplest problem in the bank. It is not a metric failure —
+   it is the metric saying that D1-D5+B, as factored, is a worse tool than algebra for
+   degree 1. Honest and worth keeping in the table.
+2. **The cubics complete under the abstraction and not under the base.** This is the
+   "cubic times out" result CLAUDE.md predicted, now on held-out. The gap prints as `–`;
+   under any depth cap it is ≥ 12 − 7 = 5 and ≥ 12 − 12 = 0 respectively. The second of
+   those is not informative: 2x³ − 3x² + x hits the cap on the *derivative* side too.
+3. **Gap tracks non-unit coefficients downward, again.** Rows with unit coefficients
+   (x² + x, x³ at −2) gap 4–5; rows with non-unit coefficients gap 1–3 or negative.
+   Same mechanism as the training set. This is now a held-out finding, not a training
+   artefact.
+
+**Forfeit:** none new — but the 2x³ − 3x² + x row was frozen with a `deriv` cost sitting
+exactly on the cap, which nobody could have known before running it, and it will flip to
+uninformative under any accounting change.
+
+---
+
+## 2026-09-12 (later) — Route 2: symmetric local closure. The gap mostly disappears.
+
+**What we tried.**
+
+Decision taken: derived lemmas count as one step, *symmetrically*. Implemented not by
+hand-writing D6 and a matching set of base lemmas (which would have been "improving the
+base rule set" by another name) but mechanically: `search(..., closure=2)` lets a second
+rule fire *inside the subterm the first rule just produced*, and the composite is one
+step. Locality is essential — a global "any 2 steps = 1" just halves every path and
+measures nothing. Under local closure, `D(c·u) → c·D(u)` falls out of D4-then-D1 without
+being written; the base gets R7-then-R6, R6-then-R1, R1-then-R1, R3-then-R8, and so on,
+on the same terms. Default `closure=1` is untouched; all 22 tests still pass.
+
+**What happened.** closure=1 → closure=2, all paths sound, all answers match the oracle.
+
+| | closure=1 | | | closure=2 | | |
+|---|---|---|---|---|---|---|
+| problem | base | deriv | gap | base | deriv | gap |
+| x² at a | 8 | 4 | 4 | 4 | 3 | **1** |
+| x² at 3 | 7 | 4 | 3 | 4 | 3 | **1** |
+| 3x² − 5x + 1 at a | 12 | 11 | 1 | 7 | 7 | **0** |
+| x³ at a | 10 | 4 | 6 | 5 | 3 | **2** |
+| x³ − 2x at 1 | 8 | 8 | 0 | 4 | 5 | **−1** |
+| *held-out* | | | | | | |
+| 4x − 7 at a | 6 | 7 | −1 | 4 | 5 | **−1** |
+| x² + x at a | 10 | 6 | 4 | 5 | 4 | **1** |
+| 2x² at a | 9 | 6 | 3 | 5 | 4 | **1** |
+| x²/2 − 3x at a | 12 | 10 | 2 | 6 | 6 | **0** |
+| x² − 4 at 2 | 7 | 6 | 1 | 4 | 4 | **0** |
+| x³ + x² at a | exhausted | 7 | – | 7 | 4 | **3** |
+| x³ at −2 | 9 | 4 | 5 | 5 | 3 | **2** |
+| 2x³ − 3x² + x at a | exhausted | 12 | – | budget (400k nodes, 137 s) | 7 | – |
+
+**The base gains more from closure than the derivative does.** Base paths roughly halve
+(8→4, 12→7, 10→5); derivative paths shrink by a third (4→3, 11→7). Cause: local closure
+rewards rules whose output is *rich*. R6 substitutes a polynomial, R1 distributes into
+one — there is always something to chain into. D1 outputs `0`, D2 outputs `1`; there is
+nothing inside to fire a second rule on. The derivative's rules are terminal by nature,
+so "a derived lemma is one step" hands the derivative D6 and hands the base a great deal
+more. The symmetric accounting is symmetric in rule-count and asymmetric in effect.
+
+**What survives closure.** On every quadratic the gap is now in {−1, 0, 1}. On every cubic
+that completes it is 2–3, and on the one that does not, the base exhausts a 400k node
+budget where the derivative finishes in 7. Both accountings agree on one thing: the
+derivative's cost grows slowly in degree and term count, and the base's grows fast. That
+is a claim about *scaling*, not about per-problem gap, and it is the only claim in the
+table that did not move when the accounting changed.
+
+**Reading.** Route 2 does not rescue D6; it removes the thing D6 was supposed to improve.
+The per-problem gap was a granularity artefact to within ±1 on everything below degree 3.
+This confirms, harder than expected, the earlier entry's warning: step count over
+hand-written rewrite rules measures the hand that wrote the rules. Track 0 has now
+produced its calibration result — the metric that survives re-factoring is growth rate,
+not gap, and a factoring-invariant cost (proof-term size, Track 1) is required for
+anything finer.
+
+**What it cost us.**
+
+- *Closure is a search option, not a rule change.* **Forfeit:** two accountings now exist
+  and every future number has to say which. Bought: the sensitivity of the instrument to
+  factoring is a measured quantity, not a sentence.
+- *Local closure, k=2, with "inside the produced subterm" as the locality criterion.*
+  **Forfeit:** that criterion is a choice; a different locality (same position only, or
+  anywhere below) gives different numbers. k=2 was picked because D6 is a 2-chain. Any k
+  is a knob.
+- *`verify.check_path` now splits composite names to find the non-identity rules.*
+  **Forfeit:** one more place where the rule-name string is load-bearing.
+- *Branching factor roughly squares under closure.* **Forfeit:** the hardest held-out
+  problem now dies on the node budget rather than the depth cap, and took two minutes to
+  do it. The budget is now part of the instrument in a way it was not before.
+- *The per-problem gap, as a headline number.* **Forfeit:** it is gone below degree 3,
+  and the training-set gaps of 4 and 6 in the first entry should be read as upper bounds
+  under a favourable factoring. The first entry's table is not wrong, but it is not
+  robust, and this line is the correction.
+
+**Addendum — closure=3.** Same run, k=3. All paths sound, oracle agrees.
+
+| problem | k=1 gap | k=2 gap | k=3 gap | (base / deriv at k=3) |
+|---|---|---|---|---|
+| x² at a | 4 | 1 | 1 | 3 / 2 |
+| 3x² − 5x + 1 at a | 1 | 0 | −1 | 4 / 5 |
+| x³ at a | 6 | 2 | 2 | 4 / 2 |
+| x³ − 2x at 1 | 0 | −1 | 0 | 4 / 4 |
+| 4x − 7 at a | −1 | −1 | 0 | 3 / 3 |
+| x² + x at a | 4 | 1 | 1 | 4 / 3 |
+| x²/2 − 3x at a | 2 | 0 | −1 | 4 / 5 |
+| x³ + x² at a | – | 3 | 1 | 5 / 4 |
+| x³ at −2 | 5 | 2 | 2 | 4 / 2 |
+| 2x³ − 3x² + x at a | – | – | – | budget / 6 |
+
+The cubic gaps did not all hold. Single-term cubics stay at 2 (k=2 → k=3). The two-term
+cubic dropped 3 → 1. Two quadratics went negative. So the "scaling" claim from the k=2
+entry is softer than written: what is stable across k is not a gap of 2–3 on cubics, it
+is that *no gap anywhere exceeds 2 once lemmas are one step*, and that the gap on
+anything below degree 3 is indistinguishable from zero.
+
+What did hold, at every k: **2x³ − 3x² + x at a — the base does not finish and the
+derivative does** (12, 7, 6 steps at k=1,2,3; base exhausts the depth cap at k=1 and the
+400k node budget at k=2,3). That is not a step-count result. It is a solve-rate result:
+one problem the base scores zero on and the abstraction scores one. It is also the only
+row in the bank with that property, which means the current bank has a sample size of one
+for the only claim that survived.
+
+Two instrument notes. (i) At k=3 the `both` configuration *also* blew the budget on that
+row while `deriv` alone finished in 6 — the larger rule set has a larger branching factor
+and spends the budget before reaching depth 6. So `both = min(base, deriv)` is no longer
+true by construction once the budget binds; it is true only when the search completes.
+(ii) As k grows, any finite path compresses toward 1 (x² deriv: 4, 3, 2). There is no
+"right" k; the accounting is degenerate in the limit, and the per-problem gap has no
+k-independent meaning.
+
+**Reading, end of day.** Track 0's calibration is done and the answer is: step-count gap
+is not the measurement. The measurement is whether the base *can* finish. That is the
+conclusion the design conversation reached in August on other grounds ("your metric stops
+being proof length and becomes solve rate on problems the base agent scores zero on") and
+which Track 0 was built partly to avoid needing. It was not avoided. The next problem bank
+should be built around the base's completion boundary — problems just past what the base
+can grind — not around a gap between two numbers that both finish.
+
+**What it cost us.** *Running k=3.* **Forfeit:** three minutes and the last of the cubic
+gap. Bought: the knowledge that the k=2 scaling claim would not have survived a reviewer
+asking "and at k=3?", and one row — a sample of one — that is worth building the next
+bank around.

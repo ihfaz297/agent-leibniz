@@ -151,5 +151,37 @@ class TestVerifier(unittest.TestCase):
         self.assertGreater(len(fails), 0)
 
 
+
+class TestClosure(unittest.TestCase):
+    """search(closure=2): local 2-chains count as one step (LEDGER 2026-09-12)."""
+
+    def _start(self):
+        body = Add((C(1), Mul((C(-5), x)), Mul((C(3), Pow(x, C(2))))))  # 3x^2 - 5x + 1
+        return canon(Slope(canon(body), "x", a))
+
+    def test_closure_never_lengthens_a_path_and_stays_sound(self):
+        from rules import BASE_ONLY, DERIV_ONLY
+        from verify import check_path
+        start = self._start()
+        for rules in (BASE_ONLY, DERIV_ONLY):
+            r1 = search(start, rules, closure=1)
+            r2 = search(start, rules, closure=2)
+            self.assertTrue(r1.found and r2.found)
+            self.assertLessEqual(r2.steps, r1.steps)
+            _, fails = check_path(start, r2.path)
+            self.assertEqual(fails, [])
+            self.assertEqual(r1.path[-1][1], r2.path[-1][1])
+
+    def test_closure_one_is_the_old_behaviour(self):
+        from rules import BASE_ONLY
+        start = self._start()
+        self.assertEqual(search(start, BASE_ONLY).steps, search(start, BASE_ONLY, closure=1).steps)
+
+    def test_constant_multiple_emerges_as_a_chain(self):
+        """D(c*u) -> c*D(u) is not a rule; under closure it is the step D4>D1."""
+        from rules import DERIV_ONLY
+        r = search(self._start(), DERIV_ONLY, closure=2)
+        self.assertIn("D4.mul>D1.const", [n for n, _ in r.path])
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
