@@ -21,6 +21,20 @@ before we commit to Lean.
 Track 0 is not a toy version of Track 1. It is the instrument calibration. If the
 compression gap does not appear in Track 0, Track 1 is not worth building.
 
+**Gate to Track 1 (2026-09-12).** The step-count gap appeared and then dissolved under
+re-factoring (LEDGER.md). Track 1 is not started until both of these are in the ledger:
+
+1. *Boundary bank.* Ten or more problems, chosen by grid, where the base exhausts and the
+   derivative finishes -- and the boundary holds at `closure=1,2,3` and under a changed
+   node budget. If the boundary moves with the accounting, there is no metric, and Lean
+   will not supply one.
+2. *`ring` spike.* One tangent-slope problem stated in Lean and proved by the base with
+   `ring`. If that is one tactic, the Lean base is not a painful grind, and Track 1 as
+   designed measures Mathlib's normalizer, not the abstraction. Banning `ring` is banning
+   an algorithm, not an axiom; decide whether that is defensible before building anything.
+
+If either fails, Track 1 is not built. That is a semester saved, not a project lost.
+
 ## Track 0 layout
 
 ```
