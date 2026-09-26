@@ -84,23 +84,24 @@ Budget hours for `cache get`: it is several GB. On a slow link it dominates
 everything else, and a power cut mid-write leaves zero-filled files that look the
 right size — check one with `head -c 40 lakefile.toml` before trusting the tree.
 
-## How to read the result
+## How the predictions landed
 
-- **A is one tactic at both degrees** — CONFIRMED. So on A-style statements the
-  Track 0 boundary-bank result does not transfer, and any Lean measurement built
-  on A-style statements is measuring Mathlib's normalizer. Do not build Track 1
-  on A.
-- **C's degree-5 cost is much larger than its degree-2 cost** — WRONG for C (flat at 6), RIGHT for C′ (12 → 23). Where it holds,
-  the base difficulty in Lean is real and grows, the boundary-bank result *does*
-  transfer in spirit, and Track 1 should sit on C-style statements. `ring` need
-  not be banned.
-- **C is flat, or nearly** — then the Lean base is not a grind at all and the
-  gate fails on that instead. This is the outcome that stops Track 1.
-- **C′ is far harder than C.** C hands over the cofactor, which is most of the
-  answer. If C′ is much worse, C understates the base cost and C′ is the real
-  baseline. It ships as `sorry` deliberately: closing it is the first genuine
-  Track 1 task, and how hard that turns out to be is itself a measurement.
+Written before the run, resolved after it. Kept visible because a prediction that is
+quietly deleted when it misses is worth nothing.
 
-Banning `ring` would be banning an algorithm rather than an axiom. Decide whether
-that is defensible *before* building anything — and note that if the verdict is
-"Track 1 sits on C", the question may not arise.
+- **"A is one tactic at both degrees."** CONFIRMED. `ring` closes the verify form at
+  degree 2 and degree 5 alike. So a Lean measurement built on A-style statements measures
+  Mathlib's normalizer. Do not build Track 1 on A.
+- **"Withholding the cofactor makes it grow."** WRONG as first written, RIGHT as
+  corrected. C — which hands the cofactor over — is flat at 6 tactics for both degrees.
+  Only C′, which withholds the cofactor's value and fixes only its degree, grows: 12 → 23.
+  The morning's prediction did not distinguish these and was therefore right about the
+  direction and wrong about the statement.
+- **"C′ is merely unproven."** WRONG, and this was the useful mistake. The first C′
+  statement quantified the cofactor as a *function*, `∃ q : ℚ → ℚ`, and that statement is
+  **false** — at x = a it degenerates to `0 = 0 * q a`, so q is pinned nowhere. It shipped
+  as a `sorry`. Its negation is now a theorem in the file. The lesson generalises past
+  this project: when the cost of a statement is the thing being measured, the statement
+  has to be checked for truth before its proof is worth timing.
+
+Banning `ring` turned out to be a non-question: `ring` cannot do C′ at all.
