@@ -514,3 +514,51 @@ reported, but "we kept going until we had ten" is a sentence a reviewer can writ
 this line is where they get to write it. *Three weak-form rows.* **Forfeit:** on those,
 someone with a bigger machine can, in principle, find a base path ≤ 12 and remove them.
 Seven would remain.
+
+---
+
+## 2026-09-26 — Gate item 2 prepared, not run. A prediction, recorded before measuring.
+
+**What we tried.** Nothing ran. Two weeks passed with no commits; HEAD was still the
+boundary-bank result. Picked up gate item 2 (the Lean `ring` spike) and found no Lean
+toolchain on the machine, so wrote the spike to be runnable by whoever has one:
+`track1/RingSpike.lean` plus `track1/README.md` with a blank results table and a reading
+guide. Untested — it will need syntax fixes on first compile.
+
+**What happened — analysis, not measurement. Flagged as such.**
+
+Arranging the spike turned up a sharper problem than the one the gate names. The gate
+asks whether `ring` makes the Lean base trivial. The answer depends entirely on *which
+statement* is being proved, and there are two, doing different jobs:
+
+- **A.** Answer supplied: `x^2 - (2*a*x + -a^2) = (x - a)^2`. A ring identity. `ring`
+  closes it in one tactic — and, being polynomial normalization, *at every degree*.
+- **C.** Answer not supplied: `∃ m c, ∀ x, x^2 - (m*x + c) = (x - a)^2`. `ring` cannot
+  touch this; it does not solve for coefficients in metavariable position.
+
+**Prediction, written down before running so it can be wrong:** A is one tactic at
+degree 2 and also at degree 5, which means **the ten boundary rows do not transfer to
+Lean.** Track 0's base gets hard with degree because BFS over rewrite rules explodes;
+`ring` does not explode, it normalizes. If that prediction holds, the most expensive
+result of 2026-09-12 buys nothing in Track 1, and a Lean base measured on A-style
+statements is trivially strong everywhere.
+
+The consequence, if it holds, is not "ban `ring`". It is that **Track 1 has to sit on
+C-style statements**, where the base's difficulty is finding the coefficients rather than
+checking an identity — and there `ring` is not a threat, because `ring` cannot do it.
+Which also means the Track 1 metric cannot be proof length of a supplied answer, and the
+gate's own wording ("if that is one tactic, Track 1 as designed measures Mathlib's
+normalizer") is right about the danger and wrong about the fix.
+
+**What it cost us.**
+
+- *Two weeks idle.* **Forfeit:** nothing technical; recorded because an append-only
+  ledger that skips the gaps reads like continuous progress, and this project's whole
+  output is a limitations section.
+- *Writing a Lean file without a Lean compiler.* **Forfeit:** the syntax is unverified
+  and whoever runs it pays for that. Bought: the design question above, which was found
+  by writing the statements out and would not have been found by planning.
+- *Recording a prediction in the ledger before the measurement.* **Forfeit:** it is now
+  on the record and cannot be quietly dropped if the run disagrees. That is the point,
+  but it does mean the next entry has to either confirm it or say plainly that it was
+  wrong.
