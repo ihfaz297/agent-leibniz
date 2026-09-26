@@ -562,3 +562,70 @@ normalizer") is right about the danger and wrong about the fix.
   on the record and cannot be quietly dropped if the run disagrees. That is the point,
   but it does mean the next entry has to either confirm it or say plainly that it was
   wrong.
+
+---
+
+## 2026-09-27 — The proposer loop exists. And step-count scoring would have kept a wrong abstraction.
+
+**What we tried.** Built `propose.py`: the v1 loop, one candidate at a time, no
+population and no search over candidates (those are v2 and CLAUDE.md forbids them).
+A candidate is a module in `candidates/` declaring `RULES` and a `PROVENANCE` dict.
+The loop runs soundness, then training, then held-out, then triage into exactly one
+bucket. Three candidates shipped with it, plus `test_propose.py` (12 tests).
+
+Provenance is enforced, not documented: a candidate whose `PROVENANCE` says the
+proposer saw `heldout.py` is **refused before it is scored**, because that cannot be
+repaired afterwards. This bit immediately — anything written in this session has seen
+the held-out set. `c001` escapes it only because git proves the abstraction predates
+the bank: `rules.py` at dac5c44 (2026-08-28), `heldout.py` at a0ce525 (2026-09-12).
+
+**What happened.**
+
+| candidate | what it is | soundness | held-out | bucket |
+|---|---|---|---|---|
+| `c001_derivative` | D1–D5 + B, the contamination ceiling | clean | finishes 2 the base cannot; median gap 3 | **Kept** |
+| `c002_bad_power` | fixture: `D(uⁿ) → n·uⁿ·D(u)`, exponent not decremented | 32 rule-level counterexamples, 22 wrong answers | *identical to c001* | **Quarantined** |
+| `c003_additive_only` | fixture: D4 and D5 deleted. Every rule true. | clean | finishes nothing; 6 regressions | **Quarantined** |
+
+**The finding, and it is not the plumbing.** `c002` is wrong. It gets the wrong answer
+on 22 of the 26 problems it can finish. **And its step counts are identical to
+`c001`'s** — same two problems finished that the base cannot, same gaps
+(−1, 4, 3, 2, 1, 5), same everything. A one-character error inside one rule changes
+every answer and changes no cost.
+
+So a loop that scored candidates on step count alone — which is what this project
+was measuring for its first three weeks — would have Kept an abstraction that is
+simply false, and the compression table would have looked exactly as good. The
+soundness referee is not belt-and-braces. It is the only thing separating the
+derivative from a plausible-looking lie that compresses just as well.
+
+`c003` is the complementary case and it landed the other way round: zero rule-level
+failures, zero wrong answers, and useless — it cannot finish a single problem in
+either bank. Rejected by the usefulness referee and *not* by the soundness one,
+which is the correct division of labour. This is the "valid-but-useless generation"
+failure the August design notes named after Lenat's AM, now reproduced in nine lines.
+
+Both directions are pinned by tests, including one asserting the two candidates have
+the same rule count, so nobody later collapses the loop to a single referee.
+
+**What it cost us.**
+
+- *Candidates are Python modules that get imported and executed.* **Forfeit:** the
+  FunSearch arrangement, and the obvious risk. Mitigated only by convention —
+  candidates are committed and read before being run, never fetched. A declarative
+  pattern language would remove the risk and cost a week; not done, and `propose.py`
+  says so in its header.
+- *The loop has no proposer in it yet.* **Forfeit:** every candidate here was written
+  by hand. What exists is the scoring and triage plumbing, which is the part that has
+  to be trustworthy before a generator is pointed at it. Calling this "an agent
+  discovering things" would be a lie; it is the bench the agent will plug into.
+- *`c001` is the contamination ceiling and we have now measured it.* **Forfeit:** the
+  number (Kept, 2 problems the base cannot finish, median gap 3) is what a model that
+  has read every calculus textbook achieves. Every future proposer is measured against
+  it, and nothing has yet been measured *without* calculus vocabulary in view — the
+  rename test is still not done and remains the control that decides whether any of
+  this is search rather than recall.
+- *`PROVENANCE` is self-reported.* **Forfeit:** the refusal gate is only as honest as
+  the person filling in the dict. There is no way to verify `calculus_words: False`
+  from inside the loop. Git dates can support a `saw_heldout` claim, as they do for
+  c001; nothing supports the others.

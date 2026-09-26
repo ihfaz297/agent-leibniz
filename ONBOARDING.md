@@ -62,9 +62,13 @@ all?** That is a yes/no per problem and it does not care how the rules are
 chopped.
 
 **What is unproven.** The Lean side, Track 1, has not started. There is a gate in
-CLAUDE.md with two conditions; one has passed, one is being measured now. And
-there is no agent anywhere in this project yet — every rule on both sides is
-hand-written by us.
+CLAUDE.md with two conditions; one has passed, one is waiting on a Mathlib download.
+
+**And there is still no proposer.** The *loop* exists now — `propose.py` will take a
+candidate abstraction and tell you whether it is sound, whether it helps, and which
+bucket it belongs in. But every candidate in `candidates/` was written by hand. What
+has been built is the bench an agent plugs into, not the agent. Do not let anyone
+describe this as an AI discovering things yet.
 
 **The failure mode we are most likely to die of** is not maths, it is drift: four
 people, several AI chat sessions, and a new plan every week. Hence the rule in
@@ -87,7 +91,10 @@ chat log. If a plan lives only in a chat window, it is not the plan.
 | `experiment.py` | The five training problems and the driver that runs three configurations. |
 | `heldout.py` | Eight problems, **frozen**. Written before any candidate was tested against them. Append-only, and every append gets a ledger line. |
 | `boundary.py` | 24 problems chosen by a grid and committed before being run. This is the bank the Lean gate rests on. |
+| `propose.py` | **The proposer loop.** Takes a candidate abstraction, checks it is sound, scores it on training, scores it on held-out, and sorts it into exactly one bucket. Run `python propose.py --list` then `python propose.py c001_derivative`. |
+| `candidates/` | One module per candidate abstraction. `c001` is the real derivative — the contamination ceiling. `c002` and `c003` are permanent fixtures that must both be rejected: one is unsound, one is sound but useless. |
 | `test_track0.py` | 25 tests. Run them before writing a ledger entry. |
+| `test_propose.py` | 12 tests for the loop's two referees and its triage. |
 | `results/` | Raw JSON from every run. |
 
 ### Documents
@@ -244,6 +251,12 @@ is valid. It can never tell you a rule is *useful*. Given only a soundness check
 a generator produces infinite valid garbage. This is exactly how Lenat's AM died
 in the 1970s, and you will be asked about it, so read Ritchie and Hanna's critique
 before you need to.
+
+We have now measured how badly you need both, and it is worse than expected.
+`candidates/c002_bad_power.py` is the derivative with one character wrong in the power
+rule. It gets 22 answers wrong. Its step counts are **identical** to the correct
+version's — same problems solved, same savings. Score on cost alone and you keep the
+lie. Run `python propose.py c002_bad_power` and watch it happen.
 
 **Propose and exploit are separate calls.** Never let one generation both invent a
 rule and use it to solve a problem. That is how you get a system that quietly

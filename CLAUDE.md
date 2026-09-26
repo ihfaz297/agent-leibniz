@@ -47,7 +47,14 @@ search.py      iterative deepening, depth cap 12, node budget 400k, returns step
 verify.py      sample ~100 random rational instantiations, compare both sides exactly
 experiment.py  the training problems and the three-configuration driver
 heldout.py     the held-out set, FROZEN 2026-09-12; append-only, every append ledgered
+propose.py     the proposer loop: soundness -> training -> held-out -> triage.
+               A candidate is a module in candidates/ with a PROVENANCE dict; one
+               that saw heldout.py is refused, not warned
+candidates/    candidate abstractions, one module each.  c001 is the contamination
+               ceiling (the real derivative); c002 and c003 are fixtures that must
+               be Quarantined, one unsound and one sound-but-useless
 test_track0.py 25 tests; run before every ledger entry
+test_propose.py 12 tests for the loop's referees and triage
 graveyard/     quarantined plans and documents, each with a header saying why
 ```
 
@@ -57,6 +64,13 @@ degree 3, and no gap anywhere exceeds 2. The measurement that survives re-factor
 *whether the base can finish at all*. Any new number quoted from Track 0 says which
 `closure` it was computed under, and any new problem bank is built around the base's
 completion boundary, not around gaps between two searches that both complete.
+
+**And step count cannot stand alone (2026-09-27).** An abstraction with a one-character
+error in its power rule scores *identically* to the correct one -- same problems
+finished, same gaps -- while getting 22 answers wrong. Soundness and usefulness are two
+separate referees and neither substitutes for the other. `candidates/c002_bad_power.py`
+and `c003_additive_only.py` are kept in the repo permanently as the two failure
+directions.
 
 ## Non-negotiable constraints
 
