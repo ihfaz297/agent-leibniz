@@ -35,6 +35,22 @@ re-factoring (LEDGER.md). Track 1 is not started until both of these are in the 
 
 If either fails, Track 1 is not built. That is a semester saved, not a project lost.
 
+**Both items now measured. Gate PASSES, conditionally (2026-09-27, LEDGER.md).**
+Item 1: ten boundary problems, stable across `closure=1,2,3` and a doubled budget.
+Item 2: `track1/RingSpike.lean` compiles, axioms clean. Tactic counts split by how the
+problem is *stated* -- verify-the-answer is 1 tactic at any degree (`ring`, exactly the
+danger the gate named); hand over the cofactor and it is 6 at any degree; withhold the
+cofactor's value and fix only its degree and it is 12 at degree 2, 23 at degree 5, with
+a structural growth law of n-1 substitutions for degree n.
+
+**Two conditions on building Track 1.**
+- It must sit on the third form (cofactor value withheld). The first two are flat in
+  degree and measure Mathlib, not the abstraction. `ring` need not be banned -- `ring`
+  cannot do the third form at all.
+- Lean proof length measures Mathlib's tactic ergonomics as much as the mathematics, the
+  same way Track 0's step count measured rule factoring. Moving to Lean reshapes that
+  problem, it does not remove it. Quote the growth law, not the tactic counts.
+
 ## Track 0 layout
 
 ```

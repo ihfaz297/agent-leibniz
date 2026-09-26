@@ -629,3 +629,72 @@ the same rule count, so nobody later collapses the loop to a single referee.
   the person filling in the dict. There is no way to verify `calculus_words: False`
   from inside the loop. Git dates can support a `saw_heldout` claim, as they do for
   c001; nothing supports the others.
+
+---
+
+## 2026-09-27 (later) — Gate item 2 MEASURED. Lean installed, spike compiles, verdict is conditional.
+
+**What we tried.** Installed elan + Lean 4.34.1 + Mathlib (the download was the whole
+cost: ~140 KB/s, several hours, and one power cut that zero-filled the first scaffold).
+Wrote and compiled `track1/RingSpike.lean`. Exit 0, no `sorry`, no warnings, and every
+theorem depends on exactly `[propext, Classical.choice, Quot.sound]` — Lean's three
+built-ins and nothing else. Raw output in `results/ring-spike-output.txt`.
+
+**What happened.** Tactic counts, by statement form and degree:
+
+| form | what is supplied | degree 2 | degree 5 | grows? |
+|---|---|---|---|---|
+| **A** verify | the answer | **1** (`ring`) | **1** (`ring`) | no |
+| **C** derive | the cofactor | **6** | **6** | no |
+| **C′** derive | only the cofactor's *degree* | **12** | **23** | **yes** |
+
+**The prediction from this morning was right, and about the wrong statement.** It said
+A would be one tactic at both degrees and therefore the ten boundary rows would not
+transfer. A *is* one tactic at both degrees. But A was never the statement to measure,
+and neither is C: handing over the cofactor hands over most of the answer, and both
+forms are flat in degree. Anything built on A measures Mathlib's normalizer, exactly as
+the gate feared.
+
+**C′ is the honest form and it grows.** Withhold the cofactor's *value* but fix its
+*degree* — legitimate, since degree bookkeeping is not the answer — and the cost goes
+12 → 23. The growth is structural, not incidental: no linear tactic can close it at all,
+because the hypotheses are linear in atoms like `a * k3` while the goal needs `a ^ 4`,
+which appears in none of them. The cofactor coefficients must be solved **triangularly**,
+each substituted before the next becomes linear. That is one substitution per cofactor
+coefficient, so **degree n costs n − 1 of them**. This is the pre-calculus grind, in Lean,
+with a growth law we can state.
+
+**And a statement-design finding worth more than the counts.** The obvious way to
+withhold the cofactor — `∃ q : ℚ → ℚ` — yields a statement that is not hard but **false**.
+At x = a the equation degenerates to `0 = 0 * q a`, so q is pinned nowhere and can be
+built pointwise for any m. Its negation is now proved in Lean
+(`no_cofactor_function_form_is_false`, counterexample a = 0, m = 1, c = 0, q = (x−1)/x,
+which works because division by zero is 0). We shipped that statement as a `sorry` this
+morning believing it was merely unproven. **A whole afternoon of careful measurement
+could have been spent on the proof of something false.** The double-root condition needs
+q polynomial; as a function it says nothing.
+
+**Verdict: gate item 2 passes, conditionally.** Track 1 may be built, and must sit on
+C′-style statements. Banning `ring` is unnecessary — `ring` cannot do C′.
+
+**What it cost us.**
+
+- *The boundary-bank result does not transfer as stated.* **Forfeit:** Track 0's base
+  grows *combinatorially* (BFS over rewrite rules, base cannot finish at all); Lean's C′
+  base grows *linearly* (n − 1 substitutions). Same direction, different law. The ten
+  boundary rows are evidence that base cost grows and derivative cost does not — they are
+  not evidence that Lean's base becomes impossible, and must not be quoted that way.
+- *Lean proof length measures Mathlib's ergonomics as much as the mathematics.* **Forfeit:**
+  `ring_nf` and `linarith` do the real work in C′, and the count of 23 is partly a fact
+  about how those tactics normalize. A different tactic set gives a different number. This
+  is the Lean analogue of the rule-factoring problem that ate Track 0's first metric, and
+  it is not fixed by moving to Lean — it is only differently shaped. Whether *any* cost
+  measure is factoring-invariant remains open, and the honest position is that we have two
+  instruments with two different biases rather than one good one.
+- *C′ at degree 5 took three compile attempts.* **Forfeit:** the 23 is the count for the
+  proof we found, not a minimum. Someone better at Lean will shorten it, and the 12 → 23
+  ratio will move. The *n − 1 substitutions* law is the robust claim; the tactic counts
+  are not.
+- *Mathlib is now a dependency of Track 1.* **Forfeit:** several GB, a toolchain pin, and
+  a CI cost we have not paid yet. `track1/spike/` is gitignored, so nothing in the repo
+  reproduces this without redoing the download.

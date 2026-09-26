@@ -35,6 +35,45 @@ imports. Let Mathlib choose, then record what worked.
 The generated `spike/` tree is gitignored. Only `RingSpike.lean` and this file
 are tracked.
 
+## RESULT (2026-09-27) — measured, compiles, axioms clean
+
+Lean 4.34.1 + Mathlib. `lake env lean Spike/RingSpike.lean` exits 0, no `sorry`, every
+theorem depends on exactly `[propext, Classical.choice, Quot.sound]`. Raw output:
+`results/ring-spike-output.txt`.
+
+| theorem | form | supplied | tactics |
+|---|---|---|---|
+| `verify_quadratic` | A | the answer | **1** (`ring`) |
+| `verify_quintic` | A | the answer | **1** (`ring`) |
+| `exists_tangent_quadratic` | B | witnesses | 1 (`ring`, term mode) |
+| `derive_quadratic` | C | the cofactor | **6** |
+| `derive_quintic` | C | the cofactor | **6** |
+| `derive_quadratic_cofactor_unknown` | C′ | only its degree | **12** |
+| `derive_quintic_cofactor_unknown` | C′ | only its degree | **23** |
+| `no_cofactor_function_form_is_false` | — | proves the naive form FALSE | 8 |
+
+**Verdict: the gate passes, conditionally.** A and C are flat in degree — build on those
+and you measure Mathlib's normalizer, which is exactly what the gate was watching for.
+C′ grows, and for a structural reason: no linear tactic can close it, because the
+hypotheses are linear in atoms like `a * k3` while the goal needs `a ^ 4`, which appears
+in none of them. The cofactor coefficients must be solved triangularly, one substitution
+each, so degree n costs n − 1 substitutions. `ring` need not be banned — it cannot do C′.
+
+**The sharpest finding is not a count.** `∃ q : ℚ → ℚ` is the obvious way to withhold the
+cofactor, and it makes the statement **false**: at x = a the equation becomes `0 = 0 * q a`,
+pinning q nowhere, so q can be built pointwise for any m. This shipped as a `sorry`
+believing it merely unproven. Its negation is now a theorem. The double-root condition
+needs q *polynomial*; as a function it is vacuous.
+
+**Caveat to carry into Track 1.** `ring_nf` and `linarith` do the real work in C′, so 23
+is partly a fact about Mathlib's tactics — the Lean analogue of the rule-factoring problem
+that ate Track 0's first metric. Quote the growth law (n − 1 substitutions), not the
+tactic counts.
+
+---
+
+## Reproducing
+
 ## What to record
 
 | cell | statement | tactics | notes |

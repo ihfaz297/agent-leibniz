@@ -31,6 +31,7 @@ so a syntax problem there cannot block the theorems.
 
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
 namespace RingSpike
@@ -96,18 +97,85 @@ theorem derive_quintic (a m c : ℚ)
   · linarith
   · linarith
 
-/-! ## C' — the harder, honest form of C.
+/-! ## C' — the cofactor's VALUE withheld.  Two findings live here.
 
-In C the cofactor is handed over, which is a large gift: knowing the cofactor is
-most of knowing the answer.  The un-gifted version quantifies it away.  If this
-is much harder than C, then C is understating the base cost and C' is the real
-baseline.  Left as `sorry` deliberately — closing it is the first real Track 1
-task, and how hard it turns out to be is itself the measurement. -/
+**Finding 1: the obvious way to withhold it gives a FALSE statement.**
+`∃ q : ℚ → ℚ` says nothing, because at x = a the equation degenerates to
+0 = 0 * q a, so q is pinned nowhere and can be built pointwise for ANY m.
+Counterexample below with a = 0, m = 1, c = 0.  The double-root condition needs q
+POLYNOMIAL; as a function it is vacuous.  Get this wrong and you carefully measure
+the proof of something false. -/
 
-theorem derive_quadratic_no_cofactor (a m c : ℚ)
-    (h : ∃ q : ℚ → ℚ, ∀ x : ℚ, x ^ 2 - (m * x + c) = (x - a) ^ 2 * q x) :
+theorem no_cofactor_function_form_is_false :
+    ¬ ∀ a m c : ℚ,
+        (∃ q : ℚ → ℚ, ∀ x : ℚ, x ^ 2 - (m * x + c) = (x - a) ^ 2 * q x)
+        → m = 2 * a ∧ c = -a ^ 2 := by
+  intro H
+  have hq : ∃ q : ℚ → ℚ, ∀ x : ℚ, x ^ 2 - (1 * x + 0) = (x - 0) ^ 2 * q x := by
+    refine ⟨fun x => (x - 1) / x, fun x => ?_⟩
+    by_cases hx : x = 0
+    · subst hx; norm_num
+    · field_simp; ring
+  have h1 := (H 0 1 0 hq).1
+  norm_num at h1
+
+/-! **Finding 2: withhold the value, fix only the degree.**  The cofactor of a
+degree-n polynomial against (x-a)^2 has degree n-2, so its COEFFICIENTS can be
+existentials while its shape stays known.  That is honest -- degree bookkeeping is
+not the answer -- it stays inside elementary algebra with no polynomial-ring API,
+and the unknown count grows with n: degree 2 has {m, c, k}, degree 5 has
+{m, c, k0..k3}.  This is the family whose growth the gate actually turns on. -/
+
+theorem derive_quadratic_cofactor_unknown (a m c : ℚ)
+    (h : ∃ k : ℚ, ∀ x : ℚ, x ^ 2 - (m * x + c) = (x - a) ^ 2 * k) :
     m = 2 * a ∧ c = -a ^ 2 := by
-  sorry
+  obtain ⟨k, hk⟩ := h
+  have h0 := hk 0
+  have h1 := hk 1
+  have h2 := hk 2
+  have h3 := hk 3
+  ring_nf at h0 h1 h2 h3
+  have hk1 : k = 1 := by linarith
+  subst hk1
+  ring_nf at h0 h1
+  constructor
+  · linarith
+  · linarith
+
+/-- Degree 5, same formulation.  No linear tactic can close this in one shot: the
+equations are linear in atoms like `a * k3`, but the goal needs `a ^ 4`, which
+appears in none of them.  The cofactor coefficients have to be solved
+TRIANGULARLY -- each one substituted before the next becomes linear -- which is
+exactly the pre-calculus grind, and it costs one substitution per cofactor
+coefficient.  Degree n needs n - 1 of them.  That is the growth the gate turns on,
+and it is structural rather than incidental. -/
+theorem derive_quintic_cofactor_unknown (a m c : ℚ)
+    (h : ∃ k0 k1 k2 k3 : ℚ, ∀ x : ℚ, x ^ 5 - (m * x + c)
+          = (x - a) ^ 2 * (k3 * x ^ 3 + k2 * x ^ 2 + k1 * x + k0)) :
+    m = 5 * a ^ 4 ∧ c = -4 * a ^ 5 := by
+  obtain ⟨k0, k1, k2, k3, hk⟩ := h
+  have p0 := hk 0
+  have p1 := hk 1
+  have p2 := hk 2
+  have p3 := hk 3
+  have p4 := hk (-1)
+  have p5 := hk (-2)
+  ring_nf at p0 p1 p2 p3 p4 p5
+  have e3 : k3 = 1 := by linarith
+  subst e3
+  ring_nf at p1 p2 p3 p4 p5
+  have e2 : k2 = 2 * a := by linarith
+  subst e2
+  ring_nf at p1 p2 p3 p4 p5
+  have e1 : k1 = 3 * a ^ 2 := by linarith
+  subst e1
+  ring_nf at p1 p2 p3 p4 p5
+  have e0 : k0 = 4 * a ^ 3 := by linarith
+  subst e0
+  ring_nf at p0 p1 p2 p3 p4 p5
+  constructor
+  · linarith
+  · linarith
 
 /-! ## D — WITH THE ABSTRACTION.
 
@@ -134,5 +202,9 @@ built-ins.  A proof that shows anything else has assumed something. -/
 #print axioms exists_tangent_quadratic
 #print axioms derive_quadratic
 #print axioms derive_quintic
+#print axioms no_cofactor_function_form_is_false
+#print axioms derive_quadratic_cofactor_unknown
+#print axioms derive_quintic_cofactor_unknown
+#print axioms dmono_two
 
 end RingSpike
