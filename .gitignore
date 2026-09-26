@@ -1,2 +1,4 @@
+results-*.log
 __pycache__/
 *.pyc
+track1/spike/.lake/
