@@ -74,28 +74,23 @@ tactic counts.
 
 ## Reproducing
 
-## What to record
+```bash
+lake new spike math
+cp RingSpike.lean spike/Spike/
+cd spike && lake exe cache get && lake env lean Spike/RingSpike.lean
+```
 
-| cell | statement | tactics | notes |
-|---|---|---|---|
-| `verify_quadratic` | A, degree 2 | | |
-| `verify_quintic` | A, degree 5 | | |
-| `exists_tangent_quadratic` | B, witnesses given | | |
-| `derive_quadratic` | C, degree 2 | | |
-| `derive_quintic` | C, degree 5 | | |
-| `derive_quadratic_no_cofactor` | C′, cofactor quantified away | | starts as `sorry` |
-| `dmono_two` / `dmono_five` | D, the abstraction | | |
-
-Also record, for every theorem: `#print axioms` shows nothing but Lean's three
-built-ins. Anything else means the proof assumed something.
+Budget hours for `cache get`: it is several GB. On a slow link it dominates
+everything else, and a power cut mid-write leaves zero-filled files that look the
+right size — check one with `head -c 40 lakefile.toml` before trusting the tree.
 
 ## How to read the result
 
-- **A is one tactic at both degrees** (predicted). Then on A-style statements the
+- **A is one tactic at both degrees** — CONFIRMED. So on A-style statements the
   Track 0 boundary-bank result does not transfer, and any Lean measurement built
   on A-style statements is measuring Mathlib's normalizer. Do not build Track 1
   on A.
-- **C's degree-5 cost is much larger than its degree-2 cost** (predicted). Then
+- **C's degree-5 cost is much larger than its degree-2 cost** — WRONG for C (flat at 6), RIGHT for C′ (12 → 23). Where it holds,
   the base difficulty in Lean is real and grows, the boundary-bank result *does*
   transfer in spirit, and Track 1 should sit on C-style statements. `ring` need
   not be banned.
