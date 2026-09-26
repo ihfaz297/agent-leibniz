@@ -1,6 +1,5 @@
 results-*.log
 __pycache__/
 *.pyc
-track1/spike/.lake/
-track1/spike/.lake/
-track1/spike/.github/
+# generated Lean project; only track1/RingSpike.lean and README are tracked
+track1/spike/
