@@ -43,37 +43,60 @@ calculus as the known-answer case to calibrate against.
 
 Read this before you get either excited or disappointed.
 
-**What works.** Track 0, the Python engine, is built, tested, and has produced
-real numbers. There are ten problems where the no-derivative search cannot finish
-and the derivative finishes in a handful of steps. That result held when we
-changed the accounting three different ways and when we doubled the compute
-budget.
+| piece | state |
+|---|---|
+| Track 0 engine, verifier, search | **done**, 25 tests |
+| Training bank (5) and held-out bank (8, frozen) | **done** |
+| Boundary bank (24 problems, pre-registered) | **done**, raw JSON in `results/` |
+| Proposer loop: soundness, scoring, triage | **done**, 12 tests |
+| Obfuscation arms 1 and 2 | **done**, 24 tests |
+| Model adapter (DeepSeek or any OpenAI-shaped endpoint) | **done**, needs a key to run |
+| Lean spike, gate item 2 base side | **done**, compiles, axioms clean |
+| Gate item 1 | **PASSED** |
+| Gate item 2 | **specified, not evaluated** -- see §9 |
+| Lean abstraction side | **never measured** -- the real blocker |
+| Δ base (finite differences) | **not started** -- blocks arms 3 and 4 |
+| Any result from an actual model | **none. Zero. Not one call has been made.** |
 
-**What broke along the way, and this is the important part.** Our original metric
-was "count the steps with and without the derivative; the difference is the
-payoff." That number turned out to be mostly an artefact of how finely we chopped
-the rewrite rules. Chop them differently and the difference nearly vanishes — on
-some problems it went *negative*, meaning the derivative was worse than plain
-algebra. So the headline numbers from our first run are not trustworthy, and the
-ledger says so at length.
+**What works.** The engine has produced real numbers. There are ten problems where
+the no-derivative search cannot finish and the derivative finishes in a handful of
+steps. That held when we changed the accounting three different ways and when we
+doubled the compute budget.
+
+**What broke along the way, and this is the important part.** Our original metric was
+"count the steps with and without the derivative; the difference is the payoff." That
+number turned out to be mostly an artefact of how finely we chopped the rewrite rules.
+Chop them differently and the difference nearly vanishes — on some problems it went
+*negative*, meaning the derivative was worse than plain algebra. The headline numbers
+from our first run are not trustworthy and the ledger says so at length.
 
 What survived is coarser and more honest: **can the no-derivative search finish at
-all?** That is a yes/no per problem and it does not care how the rules are
-chopped.
+all?** That is a yes/no per problem and it does not care how the rules are chopped.
 
-**What is unproven.** The Lean side, Track 1, has not started. There is a gate in
-CLAUDE.md with two conditions; one has passed, one is waiting on a Mathlib download.
+**The second thing that broke, and it is worse.** An abstraction with a one-character
+error in its power rule scores *identically* to the correct one — same problems
+finished, same savings — while getting 22 answers wrong. Run
+`python propose.py c002_bad_power` and watch it. Cost alone cannot tell a real
+abstraction from a plausible lie. That is why there are two independent referees and
+why neither may be removed.
 
-**And there is still no proposer.** The *loop* exists now — `propose.py` will take a
-candidate abstraction and tell you whether it is sound, whether it helps, and which
-bucket it belongs in. But every candidate in `candidates/` was written by hand. What
-has been built is the bench an agent plugs into, not the agent. Do not let anyone
-describe this as an AI discovering things yet.
+**There is still no proposer, and this matters more than anything above.** The *bench*
+is built: `propose.py` scores and triages, `proposer.py` will call a model and write
+the result out, `obfuscate.py` builds the controlled prompt. But every candidate in
+`candidates/` was written by hand, and **no model has ever been called.** Do not let
+anyone — including us — describe this as an AI discovering anything yet. What exists is
+the apparatus, and apparatus that has never met real data usually has bugs in it.
+
+**Three claims in this repo were retracted after being made.** The ledger keeps them
+visible rather than editing them away: a gate verdict that was goalpost-moving, an
+overclaim that a finite-difference target would catch contamination cleanly, and a
+claim that the adapter could handle real model output when it could not. If you catch a
+fourth, that is the most useful thing you can do this week.
 
 **The failure mode we are most likely to die of** is not maths, it is drift: four
 people, several AI chat sessions, and a new plan every week. Hence the rule in
-CLAUDE.md — CLAUDE.md is the plan, LEDGER.md is the record, everything else is a
-chat log. If a plan lives only in a chat window, it is not the plan.
+CLAUDE.md — CLAUDE.md is the plan, LEDGER.md is the record, everything else is a chat
+log. If a plan lives only in a chat window, it is not the plan.
 
 ---
 
@@ -93,8 +116,12 @@ chat log. If a plan lives only in a chat window, it is not the plan.
 | `boundary.py` | 24 problems chosen by a grid and committed before being run. This is the bank the Lean gate rests on. |
 | `propose.py` | **The proposer loop.** Takes a candidate abstraction, checks it is sound, scores it on training, scores it on held-out, and sorts it into exactly one bucket. Run `python propose.py --list` then `python propose.py c001_derivative`. |
 | `candidates/` | One module per candidate abstraction. `c001` is the real derivative — the contamination ceiling. `c002` and `c003` are permanent fixtures that must both be rejected: one is unsound, one is sound but useless. |
+| `obfuscate.py` | **The contamination control.** Builds the proposer's entire prompt for one arm. `plain` keeps real names and calculus words (the ceiling); `renamed` renames the operators, numbers the rules by position, and describes each rule **only by a worked example** — a rule called "distribute" leaks its own semantics. Checks its own output for leaked target vocabulary and refuses the arm if it finds any. Try `python obfuscate.py renamed`. |
+| `proposer.py` | **The model adapter.** Builds the prompt, calls an OpenAI-shaped endpoint over stdlib `urllib` (DeepSeek by default), extracts the fenced module, audits it, writes it to `candidates/` with the exact prompt beside it. It scores nothing — generation and judgement stay in separate processes on purpose. `--dry-run` needs no key. |
+| `opaque_ops.py` | Neutral re-exports, so a renamed prompt can say what to import without naming the target. `from terms import Slope` leaked the answer in the import line; this exists because the vocabulary checker caught that. |
 | `test_track0.py` | 25 tests. Run them before writing a ledger entry. |
 | `test_propose.py` | 12 tests for the loop's two referees and its triage. |
+| `test_proposer.py` | 24 tests: the arms, extraction, the audit, the review gate, and ten adversarial cases for malformed model output. |
 | `results/` | Raw JSON from every run. |
 
 ### Documents
@@ -209,10 +236,12 @@ paragraph in the ledger explaining why a critic might call it tuning anyway.
 
 ## 6. What we build next: the proposer
 
-Everything so far is us hand-writing both toolkits. The actual research question
-needs a *proposer* — something that invents the second toolkit itself. The design
-is deliberately boring, copied from FunSearch rather than from reinforcement
-learning.
+Everything so far is us hand-writing both toolkits. The actual research question needs
+a *proposer* — something that invents the second toolkit itself. The design is
+deliberately boring, copied from FunSearch rather than from reinforcement learning.
+
+**Steps 1 through 5 below are all built as of 2026-09-27.** What is missing is a key and
+somebody to run it. See §7.
 
 ```
    1. PROPOSE
@@ -283,49 +312,126 @@ runs. The file in `graveyard/` is what happens when this rule is not followed.
 
 ---
 
-## 7. Track 0 is the demo system — what to do to it
+## 7. Where you can actively contribute
 
-Track 0 is not a toy version of Track 1. It is the instrument calibration: the
-cheap rig where we find out whether the measurement works at all before paying for
-real proofs. It has already earned its cost, by telling us our first metric was an
-artefact — which would have taken months to discover in Lean.
+Claimable tasks. Each says what skill it needs, roughly how long, and what it unblocks.
+Put your name against one in your team channel so two people do not do the same thing,
+and **put a line in `LEDGER.md` when it produces a number.**
 
-Useful things to do to it, roughly in order of value:
+### Needs nothing but Python — start here
 
-1. **Add a problem type.** Everything is currently "slope of a polynomial at a
-   point." Extrema (`show f(x) ≥ f(1)` for x ≥ 0) and sum-of-powers closed forms
-   (`Σk³ = n²(n+1)²/4`) are both statable in the base and both want a *different*
-   abstraction — finite differences for the second, which is arguably a better
-   target than the derivative because it is a small theory rather than a single
-   definition, so a hit there is a hit on "discovered a framework." Check the four
-   questions in CLAUDE.md before adding anything.
-2. **Build the proposer loop** against the existing banks. Everything it needs
-   already exists.
-3. **Do the rename test.** One afternoon, and it is the control everyone asks for
-   first.
-4. **Make the numeric-point finding explicit.** Every problem evaluated at a
-   literal number, like `x³ at −2`, is cheap, because `canon` folds constants for
-   free. Every boundary problem is at a symbolic point. That is four for four, and
-   a future bank should state it up front rather than spend cells rediscovering
-   it.
+**A. The Δ base.** *Biggest item. A few days. Blocks arms 3 and 4, which are the only
+controls that test whether the proposer needs the target to be FAMILIAR rather than
+merely named.* Swap the target from the derivative to the finite difference operator
+`Δf(n) = f(n+1) − f(n)`, with sum-of-powers problems (`Σk`, `Σk²`, `Σk³`). Full design,
+including the three rules that keep it honest, is in `NEXT.md` §1.
 
-Things not to do: raise the depth cap or node budget, "improve" the base rules,
-edit `heldout.py`, or add a dependency without asking.
+One genuine design decision needs settling first and it is not a coding question: **what
+route does the base get to a closed-form sum?** Give it general telescoping and you have
+handed over half the target. Give it nothing and the problems are unsolvable rather than
+painful. Argue it out with a second person before writing code, and write the argument
+into the ledger.
+
+**B. Feed the adapter a real reply and fix what breaks.** *Half a day. Needs a key — or
+someone else's saved reply.* `proposer.py --from-file` replays a saved response, so this
+can be done with one call's output shared around. Everything in the pipeline was built
+against *imagined* messy output; contact will find failure modes we did not think of. The
+ledger says so explicitly. This is the highest value-per-hour task in the repo.
+
+**C. The numeric-point finding.** *An hour.* Every problem evaluated at a literal number
+(`x³ at −2`) is cheap because `canon` folds constants for free; every boundary problem is
+at a symbolic point. Four for four. Make it explicit in the bank-design rules so a future
+bank does not spend cells rediscovering it.
+
+**D. A second problem type in the current base.** *A day.* Extrema — `show f(x) ≥ f(1)`
+for x ≥ 0 — are statable in the base and want a different abstraction. Check the four
+questions in CLAUDE.md before adding anything, and grid the bank rather than hand-picking.
+
+### Needs Lean
+
+**E. The abstraction side of gate item 2.** *The real blocker on Track 1. Days.* Build a
+hand-rolled polynomial derivative in Lean with its lemmas, and prove the tangent-slope
+statements with it. `Polynomial.derivative` is banned, like `Mathlib.Analysis.*`. Until
+this exists we have half a comparison and no gap. Note honestly that **doing this is most
+of a Track 1 prototype** — the gate cannot be checked cheaply.
+
+**F. Shorten `derive_quintic_cofactor_unknown`.** *An afternoon.* It is 23 tactics for
+the proof we happened to find, not a minimum. A shorter one moves the 12→23 ratio. The
+robust claim is the *n−1 substitutions* law; the counts are soft.
+
+**G. CI for the Lean spike.** *A day, mostly waiting.* Nothing in the repo currently
+reproduces the Lean result without redoing the multi-GB Mathlib download by hand. Pin
+Lean `v4.34.1` and mathlib `d13f23b` — both recorded in `track1/README.md`.
+
+### Needs judgement rather than typing — and these are not junior tasks
+
+**H. Adversarially review the problem phrasings.** Question 2 of the four in CLAUDE.md:
+could a reader reconstruct the target from the wording alone? Whoever wrote a bank cannot
+audit their own blind spot, and this is exactly what cost BACON its credibility. Bring
+fresh eyes to `experiment.py`, `heldout.py` and `boundary.py`.
+
+**I. Hunt for a fourth retraction.** Three claims in this repo were made and then walked
+back; they are all still visible in the ledger. Read it bottom-up looking for a fourth.
+Specifically worth doubting: the ten boundary problems rest on a mechanical search budget,
+and three of the ten are the weak form of the claim (budget exhausted, not proved
+impossible). Anyone with a bigger machine could remove those three.
+
+**J. Confirm or veto the open gate sub-decision.** See §9.
+
+### Do not do these
+
+Raise the depth cap or node budget. "Improve" the base rules. Edit `heldout.py`. Add a
+dependency without asking. Population search, MCTS, or RL — those are v2, and v2 exists
+only if v1 runs. `graveyard/` holds what happens when that rule is ignored.
 
 ---
 
 ## 8. Your first afternoon
 
-1. `python test_track0.py` — confirm 25 pass.
-2. `python experiment.py --paths --only "x^2 at a"` — read the two proofs side by
-   side. That is the whole project on one screen.
-3. Read `LEDGER.md` **from the bottom up**. The recent entries hold the real
-   findings; the first entry's headline numbers are the ones we later showed to be
-   artefacts.
-4. Read the "Non-negotiable constraints" section of `CLAUDE.md`. Four items, each
-   there because breaking it would silently invalidate a result.
-5. Pick something from §7, and put a line in the ledger when it produces a number.
+1. `python test_track0.py && python test_propose.py && python test_proposer.py` — 61
+   tests, about 10 seconds.
+2. `python experiment.py --paths --only "x^2 at a"` — read the two proofs side by side.
+   That is the whole project on one screen.
+3. `python propose.py --all` — watch the loop keep the real derivative, reject an
+   unsound abstraction, and reject a sound useless one. Three verdicts, three reasons.
+4. `python propose.py c002_bad_power` and compare its step counts to `c001`'s. They are
+   identical, and `c002` gets 22 answers wrong. That is why there are two referees.
+5. `python obfuscate.py renamed` — the prompt a model actually gets, with the vocabulary
+   stripped. Ask yourself whether *you* could tell what the target is. (Look at `r7`.
+   That is the honest limit of this arm, and it is written up in §6.)
+6. Read `LEDGER.md` **from the bottom up**. Recent entries hold the real findings; the
+   first entry's headline numbers are the ones we later showed to be artefacts.
+7. Read the "Non-negotiable constraints" section of `CLAUDE.md`. Four items, each there
+   because breaking it silently invalidates a result.
+8. Claim something from §7. Put a line in the ledger when it produces a number.
 
-Then read `NEXT.md` for what to actually pick up.
+---
+
+## 9. The gate, and the one decision still open
+
+Track 1 (Lean) is gated on two conditions in `CLAUDE.md`. **Item 1 has passed.** Item 2
+is fully specified and **not yet evaluated**; the blocker is task E in §7.
+
+Item 2 was rewritten on 2026-09-27 after its first wording turned out to be unanswerable
+— it asked whether the base could be proved "with `ring`" without saying *which
+statement*, and the answer is 1 tactic, 6 tactics, or 12→23 depending on the form. An
+earlier version of this repo called that a conditional pass. That was goalpost-moving and
+the ledger retracts it. **If you take one methodological lesson from this project, take
+that one: the wording goes in before the measurement, or the measurement means nothing.**
+
+One sub-decision is settled but worth a second opinion, and anyone can reopen it: what
+"the base cannot prove it" *means*. Lean has no exhaustive search, so "we did not find a
+proof" is not a result and a clever enough person always rescues the base. The rule
+adopted: the base may instantiate at up to k points, `ring_nf`, make one automation call,
+and derive **at most one** intermediate lemma. More than one and it has failed. Under that
+rule the quadratic passes (needs one) and degree 5 fails (needs four).
+
+The threshold "at most one" is still a number somebody picked. A degree-3 or degree-4
+problem needing two lemmas sits on the wrong side of a line drawn without measuring those
+degrees. If the bank grows to include them, **revisit the line before running, not after.**
+
+---
+
+Then read `NEXT.md` for the zero-budget plan and the Δ design.
 
 If something in here is wrong, fix it and push. A stale manual is worse than none.
