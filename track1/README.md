@@ -22,10 +22,12 @@ it does not solve for coefficients sitting in metavariable position.
 
 ## Setup
 
-```bash
+```
 lake new spike math          # pulls Mathlib, picks the toolchain itself
 cp RingSpike.lean spike/Spike/
-cd spike && lake exe cache get && lake build
+cd spike
+lake exe cache get
+lake build
 ```
 
 `lake new ... math` rather than a checked-in lakefile on purpose: pinning
@@ -85,7 +87,7 @@ mathlib  d13f23b723b8a846827a245b89c10fc7d3f11612   (2026-09-24)
 
 To pin, after `lake new spike math`, edit the mathlib `[[require]]` in `lakefile.toml` to
 add `rev = "d13f23b723b8a846827a245b89c10fc7d3f11612"`, set `lean-toolchain` to
-`leanprover/lean4:v4.34.1`, then `lake update && lake exe cache get`.
+`leanprover/lean4:v4.34.1`, then run `lake update` followed by `lake exe cache get`.
 
 `track1/RingSpike.lean` as committed is byte-identical to the file that compiled, so
 the generated `spike/` tree holds nothing unique and can be deleted to reclaim ~6.6 GB.
@@ -93,10 +95,12 @@ What the tree costs to rebuild is the Mathlib download, not any lost work.
 
 ## Reproducing
 
-```bash
+```
 lake new spike math
 cp RingSpike.lean spike/Spike/
-cd spike && lake exe cache get && lake env lean Spike/RingSpike.lean
+cd spike
+lake exe cache get
+lake env lean Spike/RingSpike.lean
 ```
 
 Budget hours for `cache get`: it is several GB. On a slow link it dominates

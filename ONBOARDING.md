@@ -2,11 +2,17 @@
 
 **Start here, in five minutes:**
 
-```bash
-python test_track0.py && python test_propose.py && python test_proposer.py   # 61 tests
-python experiment.py --paths --only "x^2 at a"                               # the whole project, one screen
-python propose.py --all                                                      # three verdicts, three reasons
 ```
+python test_track0.py          # 25 tests
+python test_propose.py         # 12 tests
+python test_proposer.py        # 24 tests
+python experiment.py --paths --only "x^2 at a"
+python propose.py --all
+```
+
+One command per line on purpose: **Windows PowerShell has no `&&`**, and most of this
+team is on Windows. Everything in this repo is plain `python`, so the only shell-specific
+thing you will meet is the Lean install in §4.
 
 Then read §2 (what is actually done) and pick a task from §7. Task 1 takes an hour.
 
@@ -161,11 +167,12 @@ $env:Path = "$env:USERPROFILE\.elan\bin;$env:Path"
 ```
 
 ```bash
-# macOS / Linux
-curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y && source ~/.elan/env
+# macOS / Linux only (bash/zsh -- the && here is fine, this block is not for PowerShell)
+curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+source ~/.elan/env
 ```
 
-```bash
+```
 lake new spike math      # pulls Mathlib, picks the toolchain
 cd spike
 lake exe cache get       # THE IMPORTANT ONE. Several GB of prebuilt Mathlib.
@@ -294,9 +301,9 @@ ignoring this looks like.
 
 ## 7. Pick a task
 
-Three rules for all of them: **claim it in the team channel first**; run
-`python test_track0.py && python test_propose.py && python test_proposer.py` before and
-after; **add one line to `LEDGER.md` when you get a number.**
+Three rules for all of them: **claim it in the team channel first**; run the three test
+files before and after (`test_track0.py`, `test_propose.py`, `test_proposer.py`); **add one
+line to `LEDGER.md` when you get a number.**
 
 Ordered easiest first.
 
@@ -431,8 +438,8 @@ exists only if v1 runs. See `graveyard/` for what ignoring that looks like.
 
 ## 8. Your first afternoon
 
-1. `python test_track0.py && python test_propose.py && python test_proposer.py` — 61
-   tests, ~10 seconds.
+1. Run `python test_track0.py`, then `test_propose.py`, then `test_proposer.py` — 61
+   tests, ~10 seconds total.
 2. `python experiment.py --paths --only "x^2 at a"` — the two proofs side by side. The
    whole project on one screen.
 3. `python propose.py --all` — the loop keeps the real derivative, rejects an unsound

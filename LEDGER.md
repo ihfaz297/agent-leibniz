@@ -916,3 +916,22 @@ plumbing. We refuse it rather than repairing it, because a pipeline that silentl
 model output is measuring the pipeline. The refusal message names the fix so the next
 prompt can carry it, which is the honest middle. *Still no model has been called* -- the
 failure modes above are the ones that could be imagined, and contact will find others.
+
+**Addendum -- the onboarding doc's own quickstart did not run on the team's shell.**
+
+Every chained command in `ONBOARDING.md` and `track1/README.md` used bash `&&`. Windows
+PowerShell 5.1 treats `&&` as a parse error, not a warning, so the very first block a new
+teammate was told to run failed on the first line -- on the platform most of this team
+uses. Found by the owner pasting the error, not by us.
+
+Fixed by putting one command per line, which works in PowerShell, cmd, bash and zsh alike,
+and by labelling the single genuinely bash-only block (the macOS/Linux elan install) as
+such. Verified by running the documented quickstart through PowerShell rather than through
+the bash tool that wrote it.
+
+**What it cost us.** *Nothing technical; the lesson is about verification.* **Forfeit:**
+the docs were written and tested in a bash-flavoured shell while the audience is on
+PowerShell, and nothing in the workflow would have caught that -- the code is all plain
+`python`, so only the *documentation* was platform-specific. Any future setup instructions
+get run on the target shell before being committed, not after somebody reports a parse
+error.
