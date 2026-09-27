@@ -35,21 +35,30 @@ re-factoring (LEDGER.md). Track 1 is not started until both of these are in the 
 
 If either fails, Track 1 is not built. That is a semester saved, not a project lost.
 
-**Both items now measured. Gate PASSES, conditionally (2026-09-27, LEDGER.md).**
-Item 1: ten boundary problems, stable across `closure=1,2,3` and a doubled budget.
-Item 2: `track1/RingSpike.lean` compiles, axioms clean. Tactic counts split by how the
-problem is *stated* -- verify-the-answer is 1 tactic at any degree (`ring`, exactly the
-danger the gate named); hand over the cofactor and it is 6 at any degree; withhold the
-cofactor's value and fix only its degree and it is 12 at degree 2, 23 at degree 5, with
-a structural growth law of n-1 substitutions for degree n.
+**Item 1 PASSED. Item 2 CANNOT BE ANSWERED AS WRITTEN (2026-09-27, LEDGER.md).**
 
-**Two conditions on building Track 1.**
-- It must sit on the third form (cofactor value withheld). The first two are flat in
-  degree and measure Mathlib, not the abstraction. `ring` need not be banned -- `ring`
-  cannot do the third form at all.
-- Lean proof length measures Mathlib's tactic ergonomics as much as the mathematics, the
-  same way Track 0's step count measured rule factoring. Moving to Lean reshapes that
-  problem, it does not remove it. Quote the growth law, not the tactic counts.
+Item 1: ten boundary problems, stable across `closure=1,2,3` and a doubled budget.
+
+Item 2 is underspecified, and that is the finding. It says "proved by the base with
+`ring`" without saying *which statement*, and the answer depends entirely on that:
+
+| how the problem is stated | degree 2 | degree 5 |
+|---|---|---|
+| verify a supplied answer | **1** tactic (`ring`) | **1** tactic |
+| derive, cofactor handed over | 6 | 6 |
+| derive, only the cofactor's *degree* given | 12 | 23 |
+
+Read literally, item 2 **failed**: `ring` closed it in one tactic, which the gate says
+means the Lean base is not a painful grind. The third form does grow, and for a
+structural reason (no linear tactic can close it; the cofactor coefficients must be
+solved triangularly, n-1 substitutions for degree n). But that form was written and
+iterated against the compiler *after* the first form gave a disappointing answer, and
+was never pre-committed. Calling that a pass was goalpost-moving -- the same move the
+D6 deferral and the pre-committed boundary extension were careful to avoid.
+
+**So Track 1 is NOT cleared.** What is required before it is: a human rewrites item 2 to
+name the statement form, and commits that wording *before* anyone measures again. The
+spike and its numbers stand as evidence; the verdict does not.
 
 ## Track 0 layout
 

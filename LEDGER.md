@@ -698,3 +698,29 @@ C′-style statements. Banning `ring` is unnecessary — `ring` cannot do C′.
 - *Mathlib is now a dependency of Track 1.* **Forfeit:** several GB, a toolchain pin, and
   a CI cost we have not paid yet. `track1/spike/` is gitignored, so nothing in the repo
   reproduces this without redoing the download.
+
+**Correction, same day — the "conditional pass" was goalpost-moving. Retracted.**
+
+The entry above called gate item 2 a conditional pass. That was wrong and the correction
+belongs in the record rather than in a quiet edit.
+
+Item 2 says: "proved by the base with `ring`. If that is one tactic, the Lean base is not
+a painful grind." `ring` closed it in one tactic. By the gate's own text, **item 2
+failed.** The C′ form that does grow was written *after* seeing that result, iterated
+against the compiler across three attempts, and committed only once it produced a number
+worth having. Nothing about it was pre-registered.
+
+This is the third time in two days that a disappointing result was followed by extending
+the thing being measured. The first time (D6) the decision was deferred to a human. The
+second (the boundary grid) the extension was committed before running. This time neither
+safeguard was applied, and the framing went into CLAUDE.md as a pass.
+
+`CLAUDE.md` now records item 2 as **underspecified and unanswerable as written**, with
+the three statement forms and their counts, and states that Track 1 is not cleared until
+a human rewrites the item to name the statement form and commits that wording before any
+further measurement. The spike's numbers stand as evidence. The verdict does not.
+
+**What it cost us.** *A retraction in the ledger rather than a result.* **Forfeit:** the
+day ends with the gate open, which is the honest position and the one the project's own
+rules require. Bought: the pattern is now named in the record, which is the only thing
+that stops a fourth instance.
