@@ -153,6 +153,51 @@ directions.
   held-out set to be "more representative." Never raise the depth cap or node budget
   because a row exhausted it -- an exhausted row is a result.
 
+## Designing a NEW base: the freeze, and how to know when you are done
+
+"Do not improve the base rule set" protects a base that has already been measured
+against. A base that does not exist yet has to be *designed*, and designing means
+iterating -- the current base ended up with eight rules rather than the nine this file
+originally sketched, and the power law moved into `canon`. That was legitimate. So the
+rule needs a second half, and this is it.
+
+**The line is the freeze, not the editing.**
+
+- *Before the freeze:* iterate on the base freely. Argue each choice in `LEDGER.md`. The
+  only legitimate reason to add a base rule is that without it a problem is **impossible
+  or unstatable** rather than merely painful.
+- *The freeze:* commit the base rules **and** the held-out bank, before any candidate has
+  been scored against held-out.
+- *After the freeze:* frozen. The red-flag sentence is "the base cannot solve X, let us
+  add a rule." Before the freeze that is design. After it, that is the violation this
+  file exists to prevent.
+
+**Stopping criterion, so "done" is a check and not a feeling.** The base must solve the
+easiest problem in the class *painfully* and fail the hardest one. For the Delta base
+that is:
+
+> grinds `sum k`, fails `sum k^3`
+
+Too thin if it cannot do `sum k` at all -- then the problems are impossible rather than
+hard, and nothing has been built. Too thick if `sum k^3` falls out easily -- then the
+target has been handed over. This is question 1 below, applied to the base design instead
+of to a problem.
+
+**Three tests for any proposed base rule.**
+
+1. **True?** `verify.py` says so, by random exact-rational instantiation.
+2. **Pre-calculus?** Would a textbook state it before introducing the target?
+3. **Does it leave the target derivable but not given?** If a competent reader could read
+   the target off the base rules, the base is too thick.
+
+**The specific trap for the Delta base: telescoping.** The discrete fundamental theorem
+(`sum of Delta f telescopes to f(b) - f(a)`) is *half the abstraction*. Give the base
+general telescoping and the target is gone. Give it no cancellation at all and `sum k^3`
+is unreachable, so the problems fail question 1. The needle: the base may collapse **one
+concrete difference** by writing the terms out -- which is what a pre-calculus student
+actually does -- while the general operator and the telescoping theorem stay as the
+target. That mirrors how `R7`/`R8` split from `D1`-`D5`.
+
 ## Problem bank: four questions per problem
 
 Ask these before adding anything to the bank.

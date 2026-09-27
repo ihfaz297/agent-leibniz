@@ -389,6 +389,12 @@ in `NEXT.md` section 1.
   `D1`-`D5`. **Put the argument in `LEDGER.md` before the code.**
 - **Three rules that keep it honest** (also in `NEXT.md`): the Delta rules never go into
   the base; the oracle computes sums numerically so it cannot leak them; grid the bank.
+- **When is the base finished?** `CLAUDE.md`, "Designing a NEW base", gives the check:
+  it must grind `sum k` and fail `sum k^3`. Too thin and the problems are impossible
+  rather than painful; too thick and you handed over the target. Iterate freely until
+  that holds, then **freeze the base and the held-out bank together** before scoring any
+  candidate. After the freeze, "the base cannot solve X, let us add a rule" is the
+  violation.
 - **Edit:** `terms.py`, `canon.py`, `rules.py`, plus new `delta_experiment.py` and
   `delta_heldout.py`.
 - **Done when:** the base grinds `sum k` and fails `sum k^3`, a hand-written Delta

@@ -935,3 +935,34 @@ PowerShell, and nothing in the workflow would have caught that -- the code is al
 `python`, so only the *documentation* was platform-specific. Any future setup instructions
 get run on the target shell before being committed, not after somebody reports a parse
 error.
+
+**Addendum -- what "do not improve the base" means for a base that does not exist yet.**
+
+The owner asked the right question: the Delta base has to be *designed*, and designing
+means iterating, so how is that different from the tuning this project forbids? The rule as
+written protects a base that has already been measured against. It said nothing about a new
+one, which is a hole, and it would have been hit within an hour of starting that task.
+
+Resolved and written into CLAUDE.md as a new section. **The line is the freeze, not the
+editing.** Before the freeze, iterate freely, with each choice argued in the ledger; the
+only legitimate reason to add a base rule is that a problem is otherwise *impossible or
+unstatable* rather than merely painful. The freeze commits the base rules and the held-out
+bank together, before any candidate is scored. After it, "the base cannot solve X, let us
+add a rule" is the violation.
+
+**And a stopping criterion, so "the base is done" is a check rather than a feeling:** the
+base must grind the easiest problem in the class and fail the hardest. For Delta that is
+*grinds `sum k`, fails `sum k^3`*. Too thin and the problems fail question 1; too thick and
+the target has been handed over. Plus three tests for any proposed base rule -- is it true,
+is it pre-calculus, and does it leave the target derivable but not given.
+
+The named trap: general telescoping is half the abstraction. The base may collapse one
+concrete difference by writing terms out; the general operator and the telescoping theorem
+stay as the target, mirroring the `R7`/`R8` versus `D1`-`D5` split.
+
+**What it cost us.** *The criterion is two problems wide.* **Forfeit:** "grinds `sum k`,
+fails `sum k^3`" is checkable and thin -- a base could satisfy it and still be wrong about
+everything between. It is a necessary condition dressed as a stopping rule, and a second
+person should sanity-check the whole bank rather than just those two rows. Bought: a
+designer who would otherwise have iterated to taste now has a line to stop at, and the
+freeze protocol makes the iteration itself defensible.

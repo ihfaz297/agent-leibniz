@@ -100,6 +100,18 @@ Three rules for building it, and they are the whole reason it stays honest:
   BACON's credibility. Grid it, commit it, and have a second person check question 2 in
   CLAUDE.md before anything is scored against it.
 
+**When is the base finished?** `CLAUDE.md`, section "Designing a NEW base", gives the
+check: the base must grind `sum k` and fail `sum k^3`. Too thin and the problems are
+impossible rather than painful, so they fail question 1; too thick and the target has been
+handed over. Iterate freely until that holds, arguing each choice in the ledger, then
+**freeze the base and the held-out bank together** before any candidate is scored. After
+the freeze, "the base cannot solve X, let us add a rule" is the violation.
+
+The specific trap is telescoping: the discrete fundamental theorem is *half the
+abstraction*. The needle is that the base may collapse one concrete difference by writing
+the terms out, while the general operator and the telescoping theorem stay as the target --
+mirroring how `R7`/`R8` split from `D1`-`D5`.
+
 ### 2. Run arms 1 and 2 -- this needs ONLY a key now
 
 Built and tested as of 2026-09-27. Nothing else is required:
