@@ -1028,3 +1028,37 @@ rarer and more damaging kind, and neither of us noticed until the owner asked.
   with a grep that must find evidence of it, plus a rule that "goes into the library" may
   appear only alongside "there is no library". CI runs it. It would have caught this in
   one second, a month ago.
+
+**Addendum -- the one-shape limitation is a bound on the evidence, not on the method.**
+
+Follow-up from the owner: does the one-shape finding mean this cannot move to other
+mathematics? No, and the distinction is worth stating because the limitation as written
+invites the wrong reading.
+
+*The method is domain-agnostic.* Compression-plus-transfer, two referees, the obfuscation
+arms, triage, the freeze protocol, a pre-registered held-out bank -- none of it knows
+anything about calculus. *The evidence is not.* Find `d/dx` and Delta and you have learned
+about increment-shaped abstractions, and nothing else.
+
+Porting needs five things, and the fifth is the binding one: a base expressible as rewrite
+rules, problems with machine-checkable answers, an oracle sharing no code with the rules, a
+cost measure, and problems that are **solvable but painful** in the base. That window is
+the hard part; the loop is the cheap part, which this project's own effort distribution
+already shows -- base design and verification, not the pipeline.
+
+So: **each new shape costs a new base theory, which is most of a project, and no new
+method.** Written into CLAUDE.md with a table of five abstraction shapes, of which we test
+one, and two concrete candidates for a second: modular arithmetic (cheapest -- a genuine
+quotient-shaped family, elementary base, trivially checkable answers, clean uniqueness
+story) and the determinant (a compression device with a uniqueness characterisation, and
+row-reduction-versus-determinant is exactly the painful-versus-cheap split).
+
+Agreed sequencing with the owner: **finish calculus first, then expand.** The section is
+explicitly marked as post-v1 so it does not become scope creep.
+
+**What it cost us.** *Everything past the first row of that table is an untested design
+sketch.* **Forfeit:** the solvable-but-painful window may not exist for some of those
+targets, and nothing here checks that -- it can only be found by building the base and
+trying. Writing a roadmap for four untested domains is the kind of thing this repo
+quarantined a document for, so the section says so in its own heading and forbids starting
+any of it before v1 runs.

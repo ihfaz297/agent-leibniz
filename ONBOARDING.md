@@ -102,6 +102,11 @@ a small or discrete increment, then take a limit or a sum. Leibniz, Riemann and 
 made that one move. Succeed here and you have shown the loop finds abstractions of *that
 shape*, not abstractions in general.
 
+Neither limit means "calculus only". The **method** is domain-agnostic; the **evidence** is
+not. CLAUDE.md, "Porting to other mathematics", sketches four other abstraction shapes and
+names modular arithmetic as the cheapest second one. Each costs a new base theory -- most of
+a project -- and no new method. All of it is after v1.
+
 **The failure mode most likely to kill us** is drift, not maths: four people, several AI
 chat sessions, a new plan weekly. Hence the rule: CLAUDE.md is the plan, LEDGER.md is the
 record, everything else is a chat log. A plan that lives only in a chat window is not the

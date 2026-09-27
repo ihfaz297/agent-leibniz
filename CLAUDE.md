@@ -258,6 +258,53 @@ So if the loop succeeds here, what has been shown is that it can find abstractio
 this shape* -- and a reader is entitled to ask whether the loop would find any other kind.
 We do not know, and the honest answer in a paper is that we did not test it.
 
+## Porting to other mathematics -- AFTER v1, and untested
+
+The one-shape limitation above must not be read as "this only works for calculus". Two
+different claims:
+
+- **The method is domain-agnostic.** Compression-plus-transfer as the metric, two
+  independent referees, the obfuscation arms, the triage buckets, the freeze protocol,
+  pre-registering the held-out bank -- none of it knows anything about calculus.
+- **The evidence is not.** Find `d/dx` and Delta and you have learned about
+  increment-shaped abstractions. That is all you have learned.
+
+**What porting costs.** The instrument needs five things: a base expressible as rewrite
+rules; problems with machine-checkable answers; an oracle that shares no code with the
+rules; a cost measure; and -- the binding constraint -- problems that are **solvable but
+painful** in the base. Too thin and they are impossible, too thick and the answer is
+already there. That window is the hard part. The loop is the cheap part: this project's
+effort went into base design and verification, not the pipeline.
+
+So **each new shape costs a new base theory, and that is most of a project -- but it costs
+no new method.**
+
+**At least five abstraction shapes, of which we test one.**
+
+| shape | examples | base it would need |
+|---|---|---|
+| increment + limit/sum | `d/dx`, Delta, integrals | *what we test* |
+| quotient / equivalence class | mod n, cosets, homology | elementary integer arithmetic |
+| invariant / normal form | determinant, rank, Groebner | matrix arithmetic over Q |
+| generating function / transform | generating functions, Fourier | formal power series |
+| duality / adjunction | category-theoretic | much harder |
+
+**Cheapest second shape: modular arithmetic.** A genuinely different family -- form
+equivalence classes and work in the quotient, rather than introduce an increment and take a
+limit. Base is explicit integer arithmetic. Problems are divisibility questions, brute-force
+solvable and painful at scale. Answers are trivially machine-checkable, and there is a clean
+uniqueness story, so "did it find the right object" has a crisp answer.
+
+**Other strong candidate: the determinant.** A compression device with a uniqueness
+characterisation (the alternating multilinear form), and "is this system solvable" by row
+reduction versus by determinant is exactly the painful-versus-cheap split.
+
+**Everything below row one of that table is an untested design sketch.** The
+solvable-but-painful window may simply not exist for some of them, and that can only be
+found by trying. **Do not start any of this before v1 runs** -- see the scope rule under
+Working style. It is recorded here so that the one-shape limitation is understood as a
+bound on current evidence rather than a bound on the approach.
+
 ## Ledger
 
 `LEDGER.md`, append-only, one entry per cycle:
