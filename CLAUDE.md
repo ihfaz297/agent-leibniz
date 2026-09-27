@@ -52,19 +52,24 @@ re-factoring (LEDGER.md). Track 1 is not started until both of these are in the 
    arrives with its own proved lemmas, which is importing the answer together with its
    support library. How much work the hand-rolled version costs is itself informative.
 
-   **What "the base cannot prove it" means -- OPEN, decided by Claude, owner to confirm
-   or veto.** In Track 0 "the base cannot" is honest because an exhaustive mechanical
-   search over a fixed rule set exhausted a stated budget. Lean has no such search: a
-   human writes the proof, so "we did not find one" is not a result. To make base failure
-   falsifiable, the base is restricted to a **stated mechanical script**: instantiate the
-   hypothesis at up to k points, `ring_nf`, then a single automation call (`linarith` or
-   `nlinarith`) -- and **no target-specific hand-derived intermediate lemmas.** Under that
-   restriction the existing spike already shows a base failure: `nlinarith` with eight
-   instantiations does not close the degree-5 form, and the 23-tactic proof that does
-   close it works only because it supplies four hand-derived lemmas (`k3 = 1`, `k2 = 2a`,
-   ...) and solves triangularly. Without this restriction the gate is unfalsifiable; with
-   it, a cleverer human is not allowed to rescue the base. If the owner rejects the
-   restriction, the gate needs a different notion of base failure before it can be used.
+   **What "the base cannot prove it" means -- SETTLED 2026-09-27 by the owner.** In
+   Track 0 "the base cannot" is honest because an exhaustive mechanical search over a
+   fixed rule set exhausted a stated budget. Lean has no such search: a human writes the
+   proof, so "we did not find one" is not a result, and without a restriction a
+   sufficiently clever human always rescues the base and the gate can never return "no".
+
+   The base is therefore allowed: instantiation of the hypothesis at up to k points,
+   `ring_nf`, one automation call (`linarith` / `nlinarith`), and **at most ONE
+   hand-derived intermediate lemma.** More than one, and the base has failed.
+
+   This admits genuine ingenuity -- one clever step is exactly what a competent
+   mathematician would reach for -- while staying falsifiable, and it lets the n-1 growth
+   law do the discriminating rather than an arbitrary prohibition. Against the measured
+   spike it already separates the degrees: the quadratic form needs one such lemma
+   (`k = 1`) and **passes**; the degree-5 form needs four (`k3 = 1`, `k2 = 2a`,
+   `k1 = 3a^2`, `k0 = 4a^3`) and **fails**, with `nlinarith` over eight instantiations
+   also failing to close it. A flat ban on hand-derived lemmas was considered and
+   rejected as rigged against the base.
 
    **Known gap, must be closed before the gate is evaluated.** The abstraction side has
    never been measured. `dmono_two` / `dmono_five` in the spike are stubs that

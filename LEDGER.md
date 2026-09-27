@@ -785,3 +785,26 @@ proofs -- so there is half a comparison and no gap.
   framing carried recommendations, so the decisions are less independent than "written by
   a human" suggests. Recorded because it is exactly the kind of thing this ledger exists
   to not paper over.
+
+**Addendum, same day -- the open sub-decision is settled. Not the version Claude wrote.**
+
+The entry above flagged one decision as OPEN: what "the base cannot prove it" means in
+Lean. The owner settled it, and chose a different answer from the one in the draft.
+
+Claude had written a **flat ban** on hand-derived intermediate lemmas. The owner's answer:
+**cap them at one.** The base may instantiate at up to k points, `ring_nf`, make one
+automation call, and derive **at most one** intermediate lemma.
+
+This is better, and the reason matters. A flat ban disallows the single clever step any
+competent mathematician would obviously take, so a reviewer can fairly call it rigged
+against the base. Capping at one admits that ingenuity and stays falsifiable, because the
+discriminator becomes the *growth law* rather than a prohibition: the quadratic form needs
+exactly one such lemma (`k = 1`) and passes; degree 5 needs four and fails. The gate now
+turns on n-1 growing past 1, which is a property of the mathematics rather than of a rule
+we invented.
+
+**What it cost us.** *Nothing measured changes* -- the spike's numbers already distinguish
+the two degrees under either rule. **Forfeit:** the threshold "at most one" is still a
+number somebody picked, and a degree-3 or degree-4 problem needing two lemmas now sits on
+the wrong side of a line drawn without measuring those degrees. If the bank ever includes
+them, that line needs revisiting before, not after.

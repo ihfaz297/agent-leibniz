@@ -23,15 +23,14 @@ pass/fail, never proof length -- demonstrated on tangent slope in the
 cofactor-value-withheld form, with the abstraction being a hand-rolled polynomial
 derivative (`Polynomial.derivative` banned, like `Mathlib.Analysis.*`).
 
-**Two things remain open on it.**
+**One thing remains.**
 
-1. *One sub-decision is marked OPEN in CLAUDE.md and needs the owner to confirm or veto:*
-   what "the base cannot prove it" means. The adopted answer restricts the base to a
-   mechanical script -- instantiate at up to k points, `ring_nf`, one automation call, and
-   no hand-derived intermediate lemmas -- because otherwise a clever human always rescues
-   the base and the gate can never return "no". It is arguably unfair to the base. Read it
-   and decide.
-2. *The abstraction side has never been measured.* The base side is done; `dmono_two` and
+1. *Nothing. The gate is fully settled* -- including what "the base cannot prove it"
+   means: the base may instantiate at up to k points, `ring_nf`, make one automation call,
+   and derive **at most one** intermediate lemma. More than one and it has failed. Under
+   that rule the measured spike already separates the degrees: the quadratic needs one
+   (`k = 1`) and passes, degree 5 needs four and fails.
+2. *The one real blocker: the abstraction side has never been measured.* The base side is done; `dmono_two` and
    `dmono_five` in the spike are monomial stubs, not tangent-slope proofs. So there is half
    a comparison and no gap. Closing it means building a hand-rolled polynomial derivative
    in Lean with its lemmas -- which is most of a Track 1 prototype. **Evaluating the gate
