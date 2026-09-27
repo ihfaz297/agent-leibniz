@@ -14,20 +14,29 @@ evidence about discovery, only evidence that the bench works.
 
 ---
 
-## The one thing that needs a human, not code
+## The gate -- rewritten, and what is still open
 
-**Gate item 2 in `CLAUDE.md` is underspecified and has to be rewritten by a person.**
-It says "proved by the base with `ring`" without naming *which statement*, and the
-answer depends entirely on that — 1 tactic, 6 tactics, or 12→23 depending on the form
-(table in CLAUDE.md). An earlier version of this repo called that a conditional pass;
-that was goalpost-moving and has been retracted in the ledger.
+**Gate item 2 was rewritten on 2026-09-27** by the project owner and committed before any
+further measurement (LEDGER.md). It now reads: N >= 5 problems where, within one budget
+applied to both sides, the base *cannot prove* the statement and the abstraction can --
+pass/fail, never proof length -- demonstrated on tangent slope in the
+cofactor-value-withheld form, with the abstraction being a hand-rolled polynomial
+derivative (`Polynomial.derivative` banned, like `Mathlib.Analysis.*`).
 
-Rewrite the item to name the statement form, **commit that wording before measuring
-anything again**, and Track 1 is cleared or not on its own terms. Do not skip the
-commit-first step; the whole reason this project has any credibility is that it has
-been done that way twice and the one time it wasn't got retracted.
+**Two things remain open on it.**
 
----
+1. *One sub-decision is marked OPEN in CLAUDE.md and needs the owner to confirm or veto:*
+   what "the base cannot prove it" means. The adopted answer restricts the base to a
+   mechanical script -- instantiate at up to k points, `ring_nf`, one automation call, and
+   no hand-derived intermediate lemmas -- because otherwise a clever human always rescues
+   the base and the gate can never return "no". It is arguably unfair to the base. Read it
+   and decide.
+2. *The abstraction side has never been measured.* The base side is done; `dmono_two` and
+   `dmono_five` in the spike are monomial stubs, not tangent-slope proofs. So there is half
+   a comparison and no gap. Closing it means building a hand-rolled polynomial derivative
+   in Lean with its lemmas -- which is most of a Track 1 prototype. **Evaluating the gate
+   now costs about as much as building the thing it gates.** Worth knowing before anyone
+   starts.
 
 ## Free work, in order of value
 

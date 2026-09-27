@@ -724,3 +724,64 @@ further measurement. The spike's numbers stand as evidence. The verdict does not
 day ends with the gate open, which is the honest position and the one the project's own
 rules require. Bought: the pattern is now named in the record, which is the only thing
 that stops a fourth instance.
+
+---
+
+## 2026-09-27 (end of day) -- Gate item 2 rewritten by the owner. Four decisions, one open.
+
+**What we tried.** The previous entry retracted the "conditional pass" and said item 2 had
+to be reworded by a human, with the wording committed before any further measurement.
+Done, by interview. Four decisions, all taken by the project owner:
+
+1. **Metric: pass/fail within a fixed budget**, not proof length. The reason comes from
+   this project's own history: Track 0 showed step *count* was a rule-factoring artefact,
+   and Lean's tactic count is the same trap reshaped -- `ring_nf` and `linarith`
+   ergonomics, not mathematics. The gate now forbids restating itself in terms of proof
+   length.
+2. **Threshold: N >= 5 problems where the base cannot prove it and the abstraction can.**
+   Directly mirrors the boundary-bank result, which is the one Track 0 finding that held
+   up under every re-accounting.
+3. **Abstraction side: a hand-rolled polynomial derivative.** `Polynomial.derivative` is
+   banned alongside `Mathlib.Analysis.*` -- it ships with its own proved lemmas, which is
+   importing the answer together with its support library.
+4. **Scope: condition stated target-agnostically, demonstrated on d/dx** in the
+   cofactor-value-withheld form. Reusable for the finite-difference target later without
+   another rewrite, and the named form cannot be swapped after a bad result.
+
+**One decision the four answers did not settle, taken by Claude and flagged in CLAUDE.md
+for the owner to confirm or veto.** "Pass/fail" needs a meaning for *the base cannot prove
+it*. In Track 0 that is honest because an exhaustive mechanical search over a fixed rule
+set exhausted a stated budget. Lean has no such search -- a human writes the proof -- so
+"we did not find one" is not a result, and a sufficiently clever human can always rescue
+the base, which makes the gate unfalsifiable.
+
+The restriction adopted: the base gets a **stated mechanical script** -- instantiate at up
+to k points, `ring_nf`, one automation call -- and **no target-specific hand-derived
+intermediate lemmas**. Under it the existing spike already exhibits a base failure:
+`nlinarith` over eight instantiations does not close the degree-5 form, and the 23-tactic
+proof that does close it works only by supplying four hand-derived lemmas (k3 = 1,
+k2 = 2a, and so on) and solving triangularly. This is marked OPEN in CLAUDE.md rather than
+presented as settled, because it is the kind of call that produced the retraction earlier
+today.
+
+**Status.** Item 1 passed. **Item 2 is not yet evaluated** under the new wording, and
+Track 1 is not cleared. The base side is measured in the named form: 12 tactics at degree
+2, 23 at degree 5, automation alone failing at degree 5. The abstraction side has never
+been measured at all -- `dmono_two` and `dmono_five` are monomial stubs, not tangent-slope
+proofs -- so there is half a comparison and no gap.
+
+**What it cost us.**
+
+- *A gate that can now return "no".* **Forfeit:** under the mechanical-script restriction
+  the base is not allowed human ingenuity, which is arguably unfair to the base and
+  certainly unlike how mathematics is actually done. Bought: base failure becomes
+  falsifiable, which it was not before. If the owner vetoes the restriction, the gate has
+  no usable notion of failure and needs redesigning rather than patching.
+- *Banning `Polynomial.derivative` makes the abstraction side real work.* **Forfeit:** the
+  hand-rolled derivative has to be built and its lemmas proved before the gate can be
+  evaluated at all, which is the bulk of a Track 1 prototype. The gate therefore cannot be
+  checked cheaply -- evaluating it *is* building most of the thing it gates.
+- *The interview format.* **Forfeit:** the owner chose from options Claude framed, and the
+  framing carried recommendations, so the decisions are less independent than "written by
+  a human" suggests. Recorded because it is exactly the kind of thing this ledger exists
+  to not paper over.

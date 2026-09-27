@@ -28,37 +28,56 @@ re-factoring (LEDGER.md). Track 1 is not started until both of these are in the 
    derivative finishes -- and the boundary holds at `closure=1,2,3` and under a changed
    node budget. If the boundary moves with the accounting, there is no metric, and Lean
    will not supply one.
-2. *`ring` spike.* One tangent-slope problem stated in Lean and proved by the base with
-   `ring`. If that is one tactic, the Lean base is not a painful grind, and Track 1 as
-   designed measures Mathlib's normalizer, not the abstraction. Banning `ring` is banning
-   an algorithm, not an axiom; decide whether that is defensible before building anything.
+2. *Lean discriminates.* Stated generally, demonstrated on one named target and form.
+   **Rewritten 2026-09-27 by the project owner** after the first wording proved
+   unanswerable; see LEDGER.md for the retraction. Wording committed before any further
+   measurement.
 
-If either fails, Track 1 is not built. That is a semester saved, not a project lost.
+   **Condition (target-agnostic).** There exist **N >= 5** problems on which, within one
+   fixed budget applied identically to both sides, the **base cannot prove the statement
+   and the abstraction can.** Pass/fail, not proof length: Track 0 established that step
+   *count* is an artefact of rule factoring, and Lean's analogue -- tactic count is partly
+   a fact about how `ring_nf` and `linarith` normalize -- is the same trap differently
+   shaped. Do not restate this gate in terms of proof length.
 
-**Item 1 PASSED. Item 2 CANNOT BE ANSWERED AS WRITTEN (2026-09-27, LEDGER.md).**
+   **Demonstrated on.** Tangent slope to a polynomial over Q, stated in the
+   **cofactor-value-withheld** form: the cofactor's *degree* is given, its *coefficients*
+   are existentials. Named explicitly so it cannot be re-chosen after a disappointing
+   result -- that is exactly how the first wording failed. The other two forms are
+   disqualified and stay disqualified: verify-a-supplied-answer is 1 tactic (`ring`) at
+   any degree, and cofactor-handed-over is 6 at any degree. Both measure Mathlib.
 
-Item 1: ten boundary problems, stable across `closure=1,2,3` and a doubled budget.
+   **The abstraction side.** A polynomial derivative **defined from the base by hand**.
+   `Mathlib.Analysis.*` is banned as always, and so is `Polynomial.derivative` -- it
+   arrives with its own proved lemmas, which is importing the answer together with its
+   support library. How much work the hand-rolled version costs is itself informative.
 
-Item 2 is underspecified, and that is the finding. It says "proved by the base with
-`ring`" without saying *which statement*, and the answer depends entirely on that:
+   **What "the base cannot prove it" means -- OPEN, decided by Claude, owner to confirm
+   or veto.** In Track 0 "the base cannot" is honest because an exhaustive mechanical
+   search over a fixed rule set exhausted a stated budget. Lean has no such search: a
+   human writes the proof, so "we did not find one" is not a result. To make base failure
+   falsifiable, the base is restricted to a **stated mechanical script**: instantiate the
+   hypothesis at up to k points, `ring_nf`, then a single automation call (`linarith` or
+   `nlinarith`) -- and **no target-specific hand-derived intermediate lemmas.** Under that
+   restriction the existing spike already shows a base failure: `nlinarith` with eight
+   instantiations does not close the degree-5 form, and the 23-tactic proof that does
+   close it works only because it supplies four hand-derived lemmas (`k3 = 1`, `k2 = 2a`,
+   ...) and solves triangularly. Without this restriction the gate is unfalsifiable; with
+   it, a cleverer human is not allowed to rescue the base. If the owner rejects the
+   restriction, the gate needs a different notion of base failure before it can be used.
 
-| how the problem is stated | degree 2 | degree 5 |
-|---|---|---|
-| verify a supplied answer | **1** tactic (`ring`) | **1** tactic |
-| derive, cofactor handed over | 6 | 6 |
-| derive, only the cofactor's *degree* given | 12 | 23 |
+   **Known gap, must be closed before the gate is evaluated.** The abstraction side has
+   never been measured. `dmono_two` / `dmono_five` in the spike are stubs that
+   differentiate a monomial; they are not a tangent-slope proof via the abstraction. The
+   base side is measured; there is currently no gap, only half a comparison.
 
-Read literally, item 2 **failed**: `ring` closed it in one tactic, which the gate says
-means the Lean base is not a painful grind. The third form does grow, and for a
-structural reason (no linear tactic can close it; the cofactor coefficients must be
-solved triangularly, n-1 substitutions for degree n). But that form was written and
-iterated against the compiler *after* the first form gave a disappointing answer, and
-was never pre-committed. Calling that a pass was goalpost-moving -- the same move the
-D6 deferral and the pre-committed boundary extension were careful to avoid.
+If either item fails, Track 1 is not built. That is a semester saved, not a project lost.
 
-**So Track 1 is NOT cleared.** What is required before it is: a human rewrites item 2 to
-name the statement form, and commits that wording *before* anyone measures again. The
-spike and its numbers stand as evidence; the verdict does not.
+**Item 1: PASSED** -- ten boundary problems, stable across `closure=1,2,3` and a doubled
+node budget. **Item 2: NOT YET EVALUATED** under this wording. What is measured so far is
+the base side only, in the named form: 12 tactics at degree 2, 23 at degree 5, with a
+structural growth law of n-1 hand-derived lemmas for degree n, and automation alone
+failing at degree 5. Track 1 is **not cleared.**
 
 ## Track 0 layout
 
