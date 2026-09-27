@@ -312,77 +312,140 @@ runs. The file in `graveyard/` is what happens when this rule is not followed.
 
 ---
 
-## 7. Where you can actively contribute
+## 7. Pick a task
 
-Claimable tasks. Each says what skill it needs, roughly how long, and what it unblocks.
-Put your name against one in your team channel so two people do not do the same thing,
-and **put a line in `LEDGER.md` when it produces a number.**
+Three rules for all of them: **claim it in the team channel first**; run
+`python test_track0.py && python test_propose.py && python test_proposer.py` before and
+after; **add one line to `LEDGER.md` when you get a number.**
 
-### Needs nothing but Python — start here
+Ordered easiest first.
 
-**A. The Δ base.** *Biggest item. A few days. Blocks arms 3 and 4, which are the only
-controls that test whether the proposer needs the target to be FAMILIAR rather than
-merely named.* Swap the target from the derivative to the finite difference operator
-`Δf(n) = f(n+1) − f(n)`, with sum-of-powers problems (`Σk`, `Σk²`, `Σk³`). Full design,
-including the three rules that keep it honest, is in `NEXT.md` §1.
+---
 
-One genuine design decision needs settling first and it is not a coding question: **what
-route does the base get to a closed-form sum?** Give it general telescoping and you have
-handed over half the target. Give it nothing and the problems are unsolvable rather than
-painful. Argue it out with a second person before writing code, and write the argument
-into the ledger.
+### 1. Write down the numeric-point rule - 1 hour, no key, no Lean
 
-**B. Feed the adapter a real reply and fix what breaks.** *Half a day. Needs a key — or
-someone else's saved reply.* `proposer.py --from-file` replays a saved response, so this
-can be done with one call's output shared around. Everything in the pipeline was built
-against *imagined* messy output; contact will find failure modes we did not think of. The
-ledger says so explicitly. This is the highest value-per-hour task in the repo.
+A problem evaluated at a literal number is cheap, because `canon.py` folds constants for
+free. A problem at a symbolic point is not.
 
-**C. The numeric-point finding.** *An hour.* Every problem evaluated at a literal number
-(`x³ at −2`) is cheap because `canon` folds constants for free; every boundary problem is
-at a symbolic point. Four for four. Make it explicit in the bank-design rules so a future
-bank does not spend cells rediscovering it.
+- **See it first:** `python experiment.py`. Compare `x^3 at -2` (9 steps) against
+  `x^3 at a` (10). All four literal-point problems in the banks grind; all ten boundary
+  problems are at symbolic points.
+- **Edit:** `CLAUDE.md`, section "Problem bank: four questions". Add a fifth question:
+  *is the evaluation point symbolic?* If not, the base will probably grind it and the
+  problem cannot discriminate.
+- **Done when:** the fifth question is in `CLAUDE.md` and one line is in `LEDGER.md`.
 
-**D. A second problem type in the current base.** *A day.* Extrema — `show f(x) ≥ f(1)`
-for x ≥ 0 — are statable in the base and want a different abstraction. Check the four
-questions in CLAUDE.md before adding anything, and grid the bank rather than hand-picking.
+---
 
-### Needs Lean
+### 2. Feed the adapter a real model reply - half a day, needs one API call
 
-**E. The abstraction side of gate item 2.** *The real blocker on Track 1. Days.* Build a
-hand-rolled polynomial derivative in Lean with its lemmas, and prove the tangent-slope
-statements with it. `Polynomial.derivative` is banned, like `Mathlib.Analysis.*`. Until
-this exists we have half a comparison and no gap. Note honestly that **doing this is most
-of a Track 1 prototype** — the gate cannot be checked cheaply.
+Everything in `proposer.py` was built against *invented* messy output. No real reply has
+ever gone through it. Highest value-per-hour job in the repo.
 
-**F. Shorten `derive_quintic_cofactor_unknown`.** *An afternoon.* It is 23 tactics for
-the proof we happened to find, not a minimum. A shorter one moves the 12→23 ratio. The
-robust claim is the *n−1 substitutions* law; the counts are soft.
+- **You do not need your own key.** Anyone with one runs
+  `python proposer.py --arm renamed --model deepseek-chat` once and shares the raw reply
+  text. Then: `python proposer.py --arm renamed --from-file reply.txt`
+- **Edit:** `proposer.py` (`extract_module`, `audit`) and `propose.py` (`smoke_test`).
+- **The rule:** fix the *pipeline*, never the generated file. Hand-editing a model's
+  Python to make it load means you are measuring your own editing.
+- **Done when:** the generated candidate loads under `python propose.py <name>` with no
+  hand-editing, and every new failure mode you hit has a test in `test_proposer.py`.
 
-**G. CI for the Lean spike.** *A day, mostly waiting.* Nothing in the repo currently
-reproduces the Lean result without redoing the multi-GB Mathlib download by hand. Pin
-Lean `v4.34.1` and mathlib `d13f23b` — both recorded in `track1/README.md`.
+---
 
-### Needs judgement rather than typing — and these are not junior tasks
+### 3. Shorten the quintic Lean proof - an afternoon, needs Lean
 
-**H. Adversarially review the problem phrasings.** Question 2 of the four in CLAUDE.md:
-could a reader reconstruct the target from the wording alone? Whoever wrote a bank cannot
-audit their own blind spot, and this is exactly what cost BACON its credibility. Bring
-fresh eyes to `experiment.py`, `heldout.py` and `boundary.py`.
+`derive_quintic_cofactor_unknown` takes 23 tactics. That is the proof we happened to
+find, not a minimum.
 
-**I. Hunt for a fourth retraction.** Three claims in this repo were made and then walked
-back; they are all still visible in the ledger. Read it bottom-up looking for a fourth.
-Specifically worth doubting: the ten boundary problems rest on a mechanical search budget,
-and three of the ten are the weak form of the claim (budget exhausted, not proved
-impossible). Anyone with a bigger machine could remove those three.
+- **Setup:** rebuild Mathlib, pinning Lean `v4.34.1` and mathlib `d13f23b` - both in
+  `track1/README.md`. Hours of download, then minutes of work.
+- **Edit:** `track1/RingSpike.lean`.
+- **Done when:** it compiles with fewer tactics, `#print axioms` still shows only
+  `propext, Classical.choice, Quot.sound`, and the table in `track1/README.md` is updated.
+- **Note:** the robust claim is the *n-1 substitutions* law, not the count. A shorter
+  proof should move the count and not the law. If it moves the law, that is a far more
+  interesting result - say so loudly.
 
-**J. Confirm or veto the open gate sub-decision.** See §9.
+---
 
-### Do not do these
+### 4. Add extrema as a second problem type - 1 to 2 days, no key, no Lean
+
+Everything is currently "slope of a polynomial at a point". Extrema use the same base and
+want the same abstraction, which tests whether the instrument generalises at all.
+
+- **Problem shape:** show `f(x) >= f(c)` for `x >= 0`. For example `x^3 - 3x >= -2` on
+  `x >= 0`, which factors as `(x-1)^2 (x+2) >= 0`.
+- **Edit:** `terms.py` (a new goal node beside `Slope`), `rules.py` (base rules to reach
+  it), and a new bank file modelled on `heldout.py`.
+- **Before writing the bank:** answer the four questions in `CLAUDE.md` for each problem,
+  and **grid it** (degree x terms x coefficient type) rather than hand-picking, the way
+  `boundary.py` does.
+- **Done when:** the base grinds some and fails others, `c001_derivative` helps on them,
+  and all 61 tests still pass.
+
+---
+
+### 5. The Delta base - several days, no key, no Lean. THE BIG ONE.
+
+Swap the target from the derivative to `D f(n) = f(n+1) - f(n)`, with sum problems
+(`sum k`, `sum k^2`, `sum k^3`). This unblocks arms 3 and 4, the only controls that test
+whether a model needs the target to be *familiar* rather than merely *named*. Full design
+in `NEXT.md` section 1.
+
+- **Settle this with a second person before writing code:** *what route does the base get
+  to a closed-form sum?* Give it general telescoping and you have handed over half the
+  target. Give it nothing and the problems become impossible rather than painful. The
+  likely answer is a single-instance cancellation rule - the base can collapse one
+  concrete difference by writing the terms out - with the general operator and the
+  telescoping theorem left as the target. That mirrors how `R7`/`R8` split from
+  `D1`-`D5`. **Put the argument in `LEDGER.md` before the code.**
+- **Three rules that keep it honest** (also in `NEXT.md`): the Delta rules never go into
+  the base; the oracle computes sums numerically so it cannot leak them; grid the bank.
+- **Edit:** `terms.py`, `canon.py`, `rules.py`, plus new `delta_experiment.py` and
+  `delta_heldout.py`.
+- **Done when:** the base grinds `sum k` and fails `sum k^3`, a hand-written Delta
+  candidate in `candidates/` is Kept, and `obfuscate.py` has a third arm.
+
+---
+
+### 6. The Lean abstraction side - days, needs Lean. THE GATE BLOCKER.
+
+We measured how hard the *base* finds these problems. We never measured the abstraction.
+So there is half a comparison, no gap, and gate item 2 cannot be evaluated.
+
+- **Edit:** `track1/RingSpike.lean`. Define a polynomial derivative **by hand**, on
+  coefficient lists, the way `dmono` begins to. `Polynomial.derivative` is banned, like
+  `Mathlib.Analysis.*`, because it arrives with its own proved lemmas.
+- **Prove with it:** the tangent-slope statements in the cofactor-value-withheld form, at
+  several degrees.
+- **Done when:** five problems exist where the base fails under the section 9 rule (more
+  than one hand-derived lemma) and the abstraction succeeds - and `CLAUDE.md`'s gate
+  status stops saying "not yet evaluated".
+- **Know before starting:** this is most of a Track 1 prototype. The gate cannot be
+  checked cheaply.
+
+---
+
+### If you would rather read than code
+
+- **Review the problem wordings.** Question 2 in `CLAUDE.md`: could a reader reconstruct
+  the target from the phrasing alone? Read `experiment.py`, `heldout.py`, `boundary.py`.
+  Whoever wrote them cannot audit their own blind spot, and this is what cost BACON its
+  credibility.
+- **Look for a fourth retraction.** Three claims here were made and walked back, all
+  still in `LEDGER.md`. Best place to dig: three of the ten boundary problems are the
+  *weak* form, where the search ran out of budget rather than proving no path exists.
+  Someone with a bigger machine could delete those three.
+- **Second-opinion the open gate rule** in section 9.
+
+---
+
+### Do not
 
 Raise the depth cap or node budget. "Improve" the base rules. Edit `heldout.py`. Add a
-dependency without asking. Population search, MCTS, or RL — those are v2, and v2 exists
-only if v1 runs. `graveyard/` holds what happens when that rule is ignored.
+dependency without asking. Build population search, MCTS or RL - those are v2, and v2
+exists only if v1 runs. See `graveyard/` for what ignoring that looks like.
 
 ---
 
@@ -403,7 +466,7 @@ only if v1 runs. `graveyard/` holds what happens when that rule is ignored.
    first entry's headline numbers are the ones we later showed to be artefacts.
 7. Read the "Non-negotiable constraints" section of `CLAUDE.md`. Four items, each there
    because breaking it silently invalidates a result.
-8. Claim something from §7. Put a line in the ledger when it produces a number.
+8. Claim a task from §7 — task 1 takes an hour and is a real contribution.
 
 ---
 
