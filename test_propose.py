@@ -31,11 +31,15 @@ class TestCandidateContract(unittest.TestCase):
     def test_a_proposer_that_saw_heldout_is_refused(self):
         """The refusal is not a warning.  A candidate proposed with the held-out
         set in view cannot be scored on it, and no amount of good faith fixes
-        that after the fact (CLAUDE.md)."""
+        that after the fact (CLAUDE.md).
+
+        The stub is ALSO malformed, on purpose: the contamination refusal must be the
+        one reported.  An earlier ordering ran the mechanical smoke test first and told
+        the user its RULES were empty, burying the methodological violation."""
         class Stub:
             NAME = "stub"
-            RULES = ()
-            PROVENANCE = {"proposer": "x", "saw_heldout": True,
+            RULES = ()          # deliberately malformed too: the contamination refusal
+            PROVENANCE = {"proposer": "x", "saw_heldout": True,   # must still win
                           "saw_boundary": False, "calculus_words": True,
                           "date": "2026-09-27"}
         import sys

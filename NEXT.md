@@ -131,6 +131,16 @@ is recognisable on sight whatever it is called. Withholding it would misrepresen
 system. So a pass on arm 2 is real but limited, and arms 3 and 4 -- which need the Delta
 base -- are what test familiarity.
 
+**Malformed output is refused with a reason, not crashed on.** `ast.parse` at write time;
+then a smoke test firing every rule at every position of 300 random terms, catching
+`RULES` of the wrong type or empty, bare functions instead of `Rule` objects, wrong arity,
+rules that raise, rules returning `None` or a bare term. The search and the soundness
+referee are both guarded too, so a shape the smoke test misses becomes a verdict rather
+than a traceback. Ten adversarial tests cover one failure mode each.
+
+Refusals name the fix, so feed it back into the next prompt rather than hand-repairing the
+module -- a pipeline that silently fixes model output is measuring the pipeline.
+
 **The review gate is not optional.** A machine-written candidate arrives with
 `REVIEWED = False` and `propose.py` refuses to score it, because scoring imports and
 executes the module. Read the file. There is an import allowlist and a static audit, and

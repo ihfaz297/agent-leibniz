@@ -35,6 +35,7 @@ control and then run the result unread.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import os
 import re
@@ -110,6 +111,12 @@ def audit(src: str) -> list:
     """Static objections to machine-written source. Empty list means "worth a human
     reading it", NOT "safe to run" -- only a human flipping REVIEWED means that."""
     problems = []
+    try:
+        ast.parse(src)
+    except SyntaxError as exc:
+        # stop here: every check below assumes the source at least parses, and an
+        # unparseable module is a refusal rather than something to review
+        return [f"does not parse: line {exc.lineno}: {exc.msg}"]
     for m in re.finditer(r"^\s*(?:from\s+([\w.]+)\s+import|import\s+([\w.]+))", src, re.M):
         mod = (m.group(1) or m.group(2)).split(".")[0]
         if mod not in ALLOWED_IMPORTS:

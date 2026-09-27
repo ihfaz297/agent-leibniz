@@ -873,3 +873,46 @@ and executes the module, so this is the one gate between "a model wrote some Pyt
 - *No model has been called.* **Forfeit:** every path above was exercised with a canned
   reply. Real replies will be messier -- prose outside the fence, several blocks, rules
   that do not typecheck -- and the extraction and audit will need another pass on contact.
+
+**Addendum, same night -- the adapter could not actually survive a real reply. Hardened.**
+
+The entry above said arms 1 and 2 were "runnable on a key alone", and its own forfeit
+section said real replies would be messier and extraction "will need another pass on
+contact". Those two statements do not sit together, and the owner called it: the pipeline
+handled a canned reply and would have crashed on a real one.
+
+What was missing. `extract_module` pulled the fenced block and `audit` checked imports --
+and that was all. Nothing parsed the source, checked that `RULES` held `Rule` objects, or
+checked that a rule does not throw when fired. So a syntax error would have died at import
+time inside `propose.py`, a bare function in `RULES` would have died on attribute access,
+and a rule raising on an unanticipated term shape would have died *mid-search*, minutes in,
+taking the run with it.
+
+What was added:
+
+- `proposer.py` now `ast.parse`s the extracted source and refuses to write an unparseable
+  module at all.
+- `propose.smoke_test` fires every rule at every position of 300 random terms and reports,
+  as a refusal with a reason: `RULES` of the wrong type, empty `RULES`, entries that are
+  not `Rule` objects, wrong arity, a rule that raises, a rule returning `None`, a rule
+  returning a bare term instead of a list.
+- `soundness` guards each `check_rule` call, so a throwing rule is a reported failure
+  rather than a crashed referee.
+- `_score_one` guards the search itself, so a shape the smoke test missed yields a
+  `"raised"` status and a verdict rather than a traceback.
+
+Ten adversarial tests, one per failure mode. Suite total 61.
+
+**And a real ordering bug the tests exposed.** The smoke test was placed *before* the
+provenance checks, so a candidate whose proposer had seen `heldout.py` was refused for
+"RULES is empty" -- burying an unrepairable methodological violation under a mechanical
+one. Provenance refusals now come first. Pinned by a test whose stub is deliberately both
+contaminated and malformed.
+
+**What it cost us.** *The strictness cuts both ways.* **Forfeit:** every one of these
+refusals is a proposal that never gets scored, and some of them are near-misses -- a model
+that forgets to wrap its functions in `Rule` has done the mathematics and failed the
+plumbing. We refuse it rather than repairing it, because a pipeline that silently fixes
+model output is measuring the pipeline. The refusal message names the fix so the next
+prompt can carry it, which is the honest middle. *Still no model has been called* -- the
+failure modes above are the ones that could be imagined, and contact will find others.

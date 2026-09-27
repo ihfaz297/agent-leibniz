@@ -146,10 +146,12 @@ class TestTheReviewGate(unittest.TestCase):
     def test_reviewed_machine_candidates_load(self):
         import sys
         from propose import load
+        from rules import Rule
 
         class Stub:
             NAME = "stub"
-            RULES = ()
+            # a real rule, not (): the smoke test rejects an empty RULES, correctly
+            RULES = (Rule("n1.noop", lambda t: []),)
             REVIEWED = True
             PROVENANCE = {"proposer": "a model", "kind": "machine",
                           "saw_heldout": False, "saw_boundary": False,
@@ -180,6 +182,124 @@ class TestUnverifiedIsNotUnsound(unittest.TestCase):
         self.assertEqual(s["failures"], [])
         self.assertIn("n1.slope_only", s["unverified"])
 
+
+NL = chr(10)
+F = "`" * 3
+
+
+class TestMessyModelOutput(unittest.TestCase):
+    """The point of this class. A real reply is not a canned one, and every failure
+    below is a REFUSAL WITH A REASON rather than a stack trace -- either at write time
+    (audit) or at load time (smoke_test), never five minutes into a search."""
+
+    def _stub(self, name, rules, provenance=None):
+        import sys
+        mod = type("M", (), {})
+        mod.NAME = name
+        mod.RULES = rules
+        mod.REVIEWED = True
+        mod.PROVENANCE = provenance or {
+            "proposer": "a model", "kind": "machine", "saw_heldout": False,
+            "saw_boundary": False, "calculus_words": False, "date": "2026-09-27"}
+        sys.modules[f"candidates._{name}"] = mod
+        return f"_{name}"
+
+    def test_source_that_does_not_parse_is_refused_at_write_time(self):
+        problems = audit("def f(t:\n    return [")
+        self.assertTrue(problems)
+        self.assertIn("does not parse", problems[0])
+
+    def test_bare_functions_instead_of_Rule_objects(self):
+        """The single most likely shape error: the model writes the functions and
+        forgets to wrap them."""
+        from propose import BadCandidate, load
+        def _f(t):
+            return []
+        name = self._stub("bare_fns", (_f,))
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        self.assertIn("not a Rule", str(cm.exception))
+
+    def test_a_rule_that_raises_is_caught_before_scoring(self):
+        from propose import BadCandidate, load
+        from rules import Rule
+        def _boom(t):
+            return [t.body.args[7]]          # IndexError / AttributeError on most terms
+        name = self._stub("boom", (Rule("n1.boom", _boom),))
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        msg = str(cm.exception)
+        self.assertIn("unscoreable", msg)
+        self.assertIn("n1.boom", msg)
+
+    def test_a_rule_returning_None_is_caught(self):
+        from propose import BadCandidate, load
+        from rules import Rule
+        name = self._stub("nones", (Rule("n1.none", lambda t: None),))
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        self.assertIn("None", str(cm.exception))
+
+    def test_a_rule_returning_a_bare_term_is_caught(self):
+        """Returning the term instead of a list of terms -- an easy misreading of the
+        contract, and it would otherwise corrupt the search silently."""
+        from propose import BadCandidate, load
+        from rules import Rule
+        from terms import C
+        name = self._stub("bare_term", (Rule("n1.bare", lambda t: C(0)),))
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        self.assertIn("must return a list", str(cm.exception))
+
+    def test_wrong_arity_is_caught(self):
+        from propose import BadCandidate, load
+        from rules import Rule
+        name = self._stub("arity", (Rule("n1.arity", lambda t, extra: []),))
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        self.assertIn("unscoreable", str(cm.exception))
+
+    def test_empty_RULES_is_caught(self):
+        from propose import BadCandidate, load
+        name = self._stub("empty", ())
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        self.assertIn("empty", str(cm.exception))
+
+    def test_RULES_of_the_wrong_type_is_caught(self):
+        from propose import BadCandidate, load
+        name = self._stub("wrongtype", "not a tuple")
+        with self.assertRaises(BadCandidate) as cm:
+            load(name)
+        self.assertIn("expected a tuple", str(cm.exception))
+
+    def test_a_good_candidate_still_passes_the_smoke_test(self):
+        """The gate must not be so strict that the real abstraction trips it."""
+        from propose import load, smoke_test
+        self.assertEqual(smoke_test(load("c001_derivative")), [])
+
+    def test_prose_and_several_blocks_still_extracts(self):
+        """A real reply wraps its code in prose and sometimes offers two blocks."""
+        reply = NL.join([
+            "Here are two options.",
+            "",
+            F + "python",
+            "RULES = ()",
+            F,
+            "",
+            "Actually this longer one is better:",
+            "",
+            F + "python",
+            "from opaque_ops import Rule",
+            "def _f(t):",
+            "    return []",
+            "RULES = (Rule('n1.f', _f),)",
+            "NAME = 'x'",
+            F,
+        ])
+        src = extract_module(reply)
+        self.assertIn("n1.f", src)
+        self.assertEqual(audit(src), [])
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

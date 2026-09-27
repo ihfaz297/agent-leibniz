@@ -81,6 +81,66 @@ class BadCandidate(Exception):
     pass
 
 
+#: Terms a candidate's rules are fired at during the smoke test.  Generous, because the
+#: alternative to catching a throwing rule here is catching it five minutes into a
+#: search -- or, worse, having it take the whole run down.
+SMOKE_TRIALS = 300
+
+
+def smoke_test(mod, trials: int = SMOKE_TRIALS, seed: int = 11) -> list:
+    """Objections that make a candidate unscoreable, as opposed to unsound or useless.
+
+    A hand-written candidate cannot fail this.  A MACHINE-WRITTEN one can fail it in
+    several ways that have nothing to do with mathematics -- RULES holding bare
+    functions instead of Rule objects, a rule taking the wrong number of arguments, a
+    rule raising on a term shape it did not anticipate.  None of those are findings
+    about the abstraction, and none of them should surface as a stack trace in the
+    middle of a scoring run, so they are found here and reported as refusals."""
+    import random as _random
+
+    from terms import positions as _positions
+    from verify import random_term as _random_term
+
+    problems = []
+    rules = getattr(mod, "RULES", None)
+    if not isinstance(rules, (tuple, list)):
+        return [f"RULES is {type(rules).__name__}, expected a tuple or list"]
+    if not rules:
+        return ["RULES is empty"]
+    for i, r in enumerate(rules):
+        if not isinstance(r, Rule):
+            problems.append(f"RULES[{i}] is {type(r).__name__}, not a Rule "
+                            f"(wrap the function: Rule('n1.name', fn))")
+            continue
+        if not isinstance(getattr(r, "name", None), str) or not r.name:
+            problems.append(f"RULES[{i}] has no usable name")
+    if problems:
+        return problems
+
+    rng = _random.Random(seed)
+    for r in rules:
+        raised = None
+        for _ in range(trials):
+            t = _random_term(rng, ["x", "y", "h"], depth=3, ops=True)
+            for _path, sub in _positions(t):
+                try:
+                    out = r.apply(sub)
+                except Exception as exc:                      # noqa: BLE001
+                    raised = f"{type(exc).__name__}: {exc}"
+                    break
+                if out is None:
+                    raised = "returned None; a rule must return a list"
+                    break
+                if not isinstance(out, (list, tuple)):
+                    raised = f"returned {type(out).__name__}; a rule must return a list"
+                    break
+            if raised:
+                break
+        if raised:
+            problems.append(f"{r.name} {raised}")
+    return problems
+
+
 def load(name: str):
     mod = importlib.import_module(f"{CANDIDATE_DIR}.{name}")
     for attr in ("NAME", "RULES", "PROVENANCE"):
@@ -100,6 +160,14 @@ def load(name: str):
             f"{name}: proposer saw the held-out set. It cannot be scored on it. "
             "This is not recoverable -- write a new held-out set or a new "
             "candidate (CLAUDE.md)."
+        )
+    # last, because it is the least important refusal: a candidate that is
+    # methodologically disqualified should be told so, not told its RULES are
+    # malformed.  Ordering here was the other way round and reported the wrong reason.
+    broken = smoke_test(mod)
+    if broken:
+        raise BadCandidate(
+            f"{name}: unscoreable, not unsound -- " + "; ".join(broken)
         )
     return mod
 
@@ -122,7 +190,12 @@ def soundness(mod, trials: int = 100) -> dict:
         if not r.identity:
             out["unchecked"].append(r.name)
             continue
-        checked, fails = check_rule(r, trials=trials)
+        try:
+            checked, fails = check_rule(r, trials=trials)
+        except Exception as exc:                              # noqa: BLE001
+            out["failures"].append((r.name, f"raised during checking: "
+                                            f"{type(exc).__name__}: {exc}"))
+            continue
         out["checked"][r.name] = checked
         if checked == 0:
             # NOT a failure.  The random term generator simply never produced this
@@ -146,8 +219,13 @@ def soundness(mod, trials: int = 100) -> dict:
 def _score_one(body, at, rules, closure, budget, max_depth):
     start = canon(Slope(body, "x", at))
     t0 = time.time()
-    res = search(start, rules, closure=closure, node_budget=budget,
-                 max_depth=max_depth)
+    try:
+        res = search(start, rules, closure=closure, node_budget=budget,
+                     max_depth=max_depth)
+    except Exception as exc:                                  # noqa: BLE001
+        # a candidate rule that throws only on a shape the smoke test missed
+        return {"status": "raised", "steps": None, "secs": 0.0,
+                "error": f"{type(exc).__name__}: {exc}"}
     row = {"status": res.status, "steps": res.steps,
            "secs": round(time.time() - t0, 1)}
     if res.found:
