@@ -50,11 +50,16 @@ near-perfect trap for a model that is retrieving rather than deriving:
 | power, general | `Δ(n⁽ᵏ⁾) = k·n⁽ᵏ⁻¹⁾` on **falling factorials** `n⁽ᵏ⁾ = n(n−1)…(n−k+1)` | `k·n^(k−1)` on ordinary powers |
 | sum | `Δ(f+g) = Δf + Δg` | same — this one transfers, which is why it is not a discriminator |
 
-So contamination does not fail vaguely. It fails in a **specific, predictable,
-machine-detectable** way, and `verify.py` already catches exactly that class of error
-with no new code — random exact rationals will find `Δ(fg) ≠ fΔg + gΔf` immediately.
+`verify.py` catches that class of error with no new code — random exact rationals find
+`Δ(fg) ≠ fΔg + gΔf` immediately.
 
-Three-way outcome, all three publishable:
+**Do not oversell this, as an earlier draft of this file did.** Finite differences is
+standard discrete-maths material. `Δ(fg) = fΔg + gΔf + ΔfΔg` and falling factorials are
+in any textbook that covers the subject, so a competent model asked about Δ will often
+simply know them. The table above catches a *careless* retrieval, not retrieval as such.
+Δ is **less** contaminated than d/dx; it is not clean.
+
+Three-way outcome, all three publishable — but read the caveat above first:
 - proposes correct Δ-rules → evidence of derivation
 - proposes the calculus rules, verifier rejects them → retrieval, caught red-handed
 - proposes nothing usable → the proposer is too weak, which is also worth knowing
@@ -69,8 +74,19 @@ closed form by induction if handed one; *finding* it is the hard part, and teles
 turns it into a procedure. Check all four questions in CLAUDE.md before adding any.
 
 **Implementation sketch.** New operator node alongside `Slope`/`D` in `terms.py`; new
-base rules for shifting and summing; the Δ rules as a candidate module in `candidates/`.
-Write the Δ held-out bank *before* any candidate exists, the way `heldout.py` was done.
+base rules for shifting an index and summing a range; the Δ rules as a candidate module
+in `candidates/`.
+
+Three rules for building it, and they are the whole reason it stays honest:
+- **The Δ rules never go into the base.** They are the target. The base gets arithmetic,
+  shifting, summing — the given toolkit, which nobody discovers.
+- **The oracle must not use them either.** To check `Σk³` it computes the sum numerically
+  for specific `n`. That is independent of any Δ rule, so there is no leak through the
+  verifier.
+- **Build the bank from a mechanical grid, not by hand.** Whoever writes it already knows
+  the target and cannot audit their own phrasing for smuggling — that is what killed
+  BACON's credibility. Grid it, commit it, and have a second person check question 2 in
+  CLAUDE.md before anything is scored against it.
 
 ### 2. A local proposer — this is free and I was wrong to imply otherwise
 
@@ -87,8 +103,19 @@ Three arms, escalating:
 2. **Renamed.** Same mathematics, meaningless symbols, no calculus vocabulary anywhere
    in the prompt. One afternoon. If it still works, the model is matching structure
    rather than keywords — interesting, not conclusive.
-3. **Δ, disguised.** The trap above. This is the only arm that separates search from
-   recall.
+3. **Δ, disguised.** The trap above — partially contaminated, so a pass here is
+   suggestive rather than decisive.
+4. **A novel operator.** Invent an operator nobody has named, on polynomials over ℚ,
+   with rules that are derivable but appear in no textbook. Near-zero contamination, and
+   zero historical story — you are no longer "rediscovering calculus", you are measuring
+   whether the loop can find *any* abstraction. Worth having precisely because it is the
+   only arm where retrieval is impossible.
+
+**The measurement is the gradient across arms, not any single arm.** No arm is clean, and
+none needs to be. Performance falling off as you move 1 → 2 → 3 → 4 *is* the contamination
+measurement, and it is meaningful even though every individual arm is dirty. This is the
+only version of the experiment that is defensible, and it is why the arms matter far more
+than which model you point at them.
 
 Caveat on using a weak local model: if it fails arm 3, you cannot tell "too dumb" from
 "was only ever retrieving." So a *failure* on a local model is uninformative, while a
