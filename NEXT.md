@@ -39,6 +39,10 @@ derivative (`Polynomial.derivative` banned, like `Mathlib.Analysis.*`).
 
 ## Free work, in order of value
 
+**Δ first, then a key.** Arms 1 and 2 are runnable today on a key alone (§2). Arms 3 and
+4 -- the ones that test whether the proposer needs the target to be familiar rather than
+merely named -- need the Δ base, and that is §1.
+
 ### 1. The Δ base — the experiment that actually discriminates
 
 This is the highest-value thing in the repo that needs neither money nor Lean, and
@@ -96,42 +100,43 @@ Three rules for building it, and they are the whole reason it stays honest:
   BACON's credibility. Grid it, commit it, and have a second person check question 2 in
   CLAUDE.md before anything is scored against it.
 
-### 2. A local proposer — this is free and I was wrong to imply otherwise
+### 2. Run arms 1 and 2 -- this needs ONLY a key now
 
-A local open-weights model via `ollama` costs nothing but disk. It is weaker and just
-as contaminated as a frontier model, **and that does not matter**, because the controls
-do the work, not the model's ignorance. You cannot make a model forget calculus; you
-can make the task unrecognisable.
+Built and tested as of 2026-09-27. Nothing else is required:
 
-Three arms, escalating:
+```bash
+python obfuscate.py renamed          # read the prompt the model will get; no key needed
+python proposer.py --arm plain    --dry-run
+export LEIBNIZ_API_KEY=sk-...
+python proposer.py --arm plain    --model deepseek-chat
+python proposer.py --arm renamed  --model deepseek-chat
+# read each generated file IN FULL, then set REVIEWED = True in it
+python propose.py m001_plain_deepseek_chat
+python propose.py m002_renamed_deepseek_chat
+```
 
-1. **Plain.** Rules named as they are, calculus words present. This is the ceiling, and
-   `candidates/c001_derivative.py` already establishes it by hand: Kept, finishes two
-   held-out problems the base cannot.
-2. **Renamed.** Same mathematics, meaningless symbols, no calculus vocabulary anywhere
-   in the prompt. One afternoon. If it still works, the model is matching structure
-   rather than keywords — interesting, not conclusive.
-3. **Δ, disguised.** The trap above — partially contaminated, so a pass here is
-   suggestive rather than decisive.
-4. **A novel operator.** Invent an operator nobody has named, on polynomials over ℚ,
-   with rules that are derivable but appear in no textbook. Near-zero contamination, and
-   zero historical story — you are no longer "rediscovering calculus", you are measuring
-   whether the loop can find *any* abstraction. Worth having precisely because it is the
-   only arm where retrieval is impossible.
+`--from-file` replays a saved reply, so develop against a canned one before spending a
+call. DeepSeek is the default because it is cheap enough to sample many proposals, which
+is what a FunSearch-style loop wants; `--base-url` points it anywhere OpenAI-shaped.
 
-**The measurement is the gradient across arms, not any single arm.** No arm is clean, and
-none needs to be. Performance falling off as you move 1 → 2 → 3 → 4 *is* the contamination
-measurement, and it is meaningful even though every individual arm is dirty. This is the
-only version of the experiment that is defensible, and it is why the arms matter far more
-than which model you point at them.
+**What arms 1 and 2 measure, and what they do not.** Arm 1 is the ceiling: real names,
+calculus vocabulary present. Arm 2 is the same mathematics with the vocabulary stripped --
+operators renamed, rules numbered by position, and each rule described only by a worked
+example rather than an English name. The difference between the two is whether the
+proposer needed the *words*.
 
-Caveat on using a weak local model: if it fails arm 3, you cannot tell "too dumb" from
-"was only ever retrieving." So a *failure* on a local model is uninformative, while a
-*pass* is a strong result. Plan for that asymmetry rather than being surprised by it.
+It is **not** whether the proposer needed the target to be *familiar*. Rule `r7` is the
+base's own route to a GOAL term, and its demonstration shows a difference quotient, which
+is recognisable on sight whatever it is called. Withholding it would misrepresent the
+system. So a pass on arm 2 is real but limited, and arms 3 and 4 -- which need the Delta
+base -- are what test familiarity.
 
-`propose.py` takes any candidate module, so the only new code is the bit that turns
-model output into a module — and remember the provenance dict is enforced, not advisory:
-a candidate whose proposer saw `heldout.py` is refused before scoring.
+**The review gate is not optional.** A machine-written candidate arrives with
+`REVIEWED = False` and `propose.py` refuses to score it, because scoring imports and
+executes the module. Read the file. There is an import allowlist and a static audit, and
+neither is a substitute for reading it.
+
+### 3. Small, genuinely useful, an hour each
 
 ### 3. Small, genuinely useful, an hour each
 

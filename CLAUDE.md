@@ -103,7 +103,17 @@ candidates/    candidate abstractions, one module each.  c001 is the contaminati
                ceiling (the real derivative); c002 and c003 are fixtures that must
                be Quarantined, one unsound and one sound-but-useless
 test_track0.py 25 tests; run before every ledger entry
+obfuscate.py   the contamination control: builds the proposer's prompt for one arm.
+               plain = real names (the ceiling); renamed = opaque symbols, rules
+               numbered by position, every rule described ONLY by example.  Checks
+               its own output for leaked target vocabulary and refuses if it finds any
+proposer.py    model -> candidate module.  stdlib urllib, DeepSeek by default.  Writes
+               the candidate UNREVIEWED; propose.py refuses to score it until a human
+               reads the file and sets REVIEWED = True
+opaque_ops.py  neutral re-exports so a prompt can say what to import without naming
+               the target (`from terms import Slope` leaked the answer in the import)
 test_propose.py 12 tests for the loop's referees and triage
+test_proposer.py 14 tests for the arms, extraction, the audit and the review gate
 graveyard/     quarantined plans and documents, each with a header saying why
 track1/        the Lean spike.  RingSpike.lean is byte-identical to the file that
                compiled; README.md holds the results table AND THE VERSION PIN --

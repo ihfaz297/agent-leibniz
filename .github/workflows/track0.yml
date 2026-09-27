@@ -28,6 +28,7 @@ jobs:
           python-version: "3.11"
       - run: python test_track0.py
       - run: python test_propose.py
+      - run: python test_proposer.py
 
   boundary:
     if: github.event_name == 'workflow_dispatch'

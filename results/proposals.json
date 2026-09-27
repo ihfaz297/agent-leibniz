@@ -1275,5 +1275,1641 @@
    "bucket": "Quarantined",
    "reason": "sound but does not help anywhere"
   }
+ },
+ {
+  "candidate": "m001_renamed_deepseek_chat",
+  "refused": "m001_renamed_deepseek_chat: machine-written and REVIEWED is not True. A human must read the whole module before it is imported and scored. Read it, then set REVIEWED = True in the file."
+ },
+ {
+  "candidate": "m001_renamed_deepseek_chat",
+  "name": "m001 (renamed, deepseek-chat)",
+  "provenance": {
+   "proposer": "deepseek-chat via proposer.py, arm=renamed",
+   "kind": "machine",
+   "saw_heldout": false,
+   "saw_boundary": false,
+   "calculus_words": false,
+   "date": "2026-09-27"
+  },
+  "rules": [
+   "n1.const",
+   "n2.var",
+   "n3.bridge"
+  ],
+  "closure": 1,
+  "budget": 400000,
+  "max_depth": 12,
+  "soundness": {
+   "checked": {
+    "n1.const": 100,
+    "n2.var": 100,
+    "n3.bridge": 0
+   },
+   "unchecked": [],
+   "failures": [
+    [
+     "n3.bridge",
+     "rule never fired on a random term"
+    ]
+   ]
+  },
+  "training": {
+   "rows": [
+    {
+     "problem": "x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(a + a)"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(a + a)"
+     }
+    },
+    {
+     "problem": "x^2 at 3",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     }
+    },
+    {
+     "problem": "3x^2 - 5x + 1 at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.8,
+      "answer_ok": true,
+      "answer": "(-5 + (3*a) + (3*a))"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.8,
+      "answer_ok": true,
+      "answer": "(-5 + (3*a) + (3*a))"
+     }
+    },
+    {
+     "problem": "x^3 at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.5,
+      "answer_ok": true,
+      "answer": "(a^2 + a^2 + a^2)"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.3,
+      "answer_ok": true,
+      "answer": "(a^2 + a^2 + a^2)"
+     }
+    },
+    {
+     "problem": "x^3 - 2x at 1",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.2,
+      "answer_ok": true,
+      "answer": "1"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [],
+    "finishes_base_cannot": [],
+    "base_finishes_cand_cannot": [
+     "x^2 at a",
+     "x^2 at 3",
+     "3x^2 - 5x + 1 at a",
+     "x^3 at a",
+     "x^3 - 2x at 1"
+    ],
+    "gaps": {},
+    "median_gap": null
+   }
+  },
+  "heldout": {
+   "rows": [
+    {
+     "problem": "4x - 7 at a",
+     "base": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^2 + x at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(1 + a + a)"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(1 + a + a)"
+     }
+    },
+    {
+     "problem": "2x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (2*a))"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (2*a))"
+     }
+    },
+    {
+     "problem": "x^2/2 - 3x at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.7,
+      "answer_ok": true,
+      "answer": "(-3 + (1/2*a) + (1/2*a))"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.8,
+      "answer_ok": true,
+      "answer": "(-3 + (1/2*a) + (1/2*a))"
+     }
+    },
+    {
+     "problem": "x^2 - 4 at 2",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^3 + x^2 at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 13.3
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 11.7
+     }
+    },
+    {
+     "problem": "x^3 at -2",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.3,
+      "answer_ok": true,
+      "answer": "12"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.2,
+      "answer_ok": true,
+      "answer": "12"
+     }
+    },
+    {
+     "problem": "2x^3 - 3x^2 + x at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 27.1
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 20.5
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [],
+    "finishes_base_cannot": [],
+    "base_finishes_cand_cannot": [
+     "4x - 7 at a",
+     "x^2 + x at a",
+     "2x^2 at a",
+     "x^2/2 - 3x at a",
+     "x^2 - 4 at 2",
+     "x^3 at -2"
+    ],
+    "gaps": {},
+    "median_gap": null
+   }
+  },
+  "boundary": null,
+  "triage": {
+   "bucket": "Quarantined",
+   "reason": "unsound: ('n3.bridge', 'rule never fired on a random term')"
+  }
+ },
+ {
+  "candidate": "c001_derivative",
+  "name": "derivative (D1-D5 + bridge B) -- contamination ceiling",
+  "provenance": {
+   "proposer": "Claude (Aug 2026 session), hand-written into rules.py",
+   "kind": "abstraction",
+   "saw_heldout": false,
+   "saw_boundary": false,
+   "calculus_words": true,
+   "date": "2026-08-28"
+  },
+  "rules": [
+   "D1.const",
+   "D2.var",
+   "D3.add",
+   "D4.mul",
+   "D5.pow",
+   "B.bridge"
+  ],
+  "closure": 1,
+  "budget": 400000,
+  "max_depth": 12,
+  "soundness": {
+   "checked": {
+    "D1.const": 100,
+    "D2.var": 100,
+    "D3.add": 100,
+    "D4.mul": 100,
+    "D5.pow": 100
+   },
+   "unchecked": [
+    "B.bridge"
+   ],
+   "unverified": [],
+   "failures": []
+  },
+  "training": {
+   "rows": [
+    {
+     "problem": "x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(a + a)"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(2*a)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(2*a)"
+     }
+    },
+    {
+     "problem": "x^2 at 3",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     }
+    },
+    {
+     "problem": "3x^2 - 5x + 1 at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.7,
+      "answer_ok": true,
+      "answer": "(-5 + (3*a) + (3*a))"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 11,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(-5 + (6*a))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 11,
+      "secs": 0.6,
+      "answer_ok": true,
+      "answer": "(-5 + (6*a))"
+     }
+    },
+    {
+     "problem": "x^3 at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.4,
+      "answer_ok": true,
+      "answer": "(a^2 + a^2 + a^2)"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(3*a^2)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(3*a^2)"
+     }
+    },
+    {
+     "problem": "x^3 - 2x at 1",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "1"
+     },
+     "both": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [],
+    "finishes_base_cannot": [],
+    "base_finishes_cand_cannot": [],
+    "gaps": {
+     "x^2 at a": 4,
+     "x^2 at 3": 3,
+     "3x^2 - 5x + 1 at a": 1,
+     "x^3 at a": 6,
+     "x^3 - 2x at 1": 0
+    },
+    "median_gap": 3
+   }
+  },
+  "heldout": {
+   "rows": [
+    {
+     "problem": "4x - 7 at a",
+     "base": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^2 + x at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(1 + a + a)"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(1 + (2*a))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(1 + (2*a))"
+     }
+    },
+    {
+     "problem": "2x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (2*a))"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(4*a)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(4*a)"
+     }
+    },
+    {
+     "problem": "x^2/2 - 3x at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.6,
+      "answer_ok": true,
+      "answer": "(-3 + (1/2*a) + (1/2*a))"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(-3 + a)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.4,
+      "answer_ok": true,
+      "answer": "(-3 + a)"
+     }
+    },
+    {
+     "problem": "x^2 - 4 at 2",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^3 + x^2 at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 11.5
+     },
+     "cand": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (3*a^2))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.2,
+      "answer_ok": true,
+      "answer": "((2*a) + (3*a^2))"
+     }
+    },
+    {
+     "problem": "x^3 at -2",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.2,
+      "answer_ok": true,
+      "answer": "12"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "12"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "12"
+     }
+    },
+    {
+     "problem": "2x^3 - 3x^2 + x at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 24.0
+     },
+     "cand": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.2,
+      "answer_ok": true,
+      "answer": "(1 + (-6*a) + (6*a^2))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 12,
+      "secs": 21.8,
+      "answer_ok": true,
+      "answer": "(1 + (-6*a) + (6*a^2))"
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [],
+    "finishes_base_cannot": [
+     "x^3 + x^2 at a",
+     "2x^3 - 3x^2 + x at a"
+    ],
+    "base_finishes_cand_cannot": [],
+    "gaps": {
+     "4x - 7 at a": -1,
+     "x^2 + x at a": 4,
+     "2x^2 at a": 3,
+     "x^2/2 - 3x at a": 2,
+     "x^2 - 4 at 2": 1,
+     "x^3 at -2": 5
+    },
+    "median_gap": 3
+   }
+  },
+  "boundary": null,
+  "triage": {
+   "bucket": "Kept",
+   "reason": "held-out: finishes 2 the base cannot, median gap 3"
+  }
+ },
+ {
+  "candidate": "c002_bad_power",
+  "name": "FIXTURE: derivative with a broken power rule (must be Quarantined)",
+  "provenance": {
+   "proposer": "fixture -- mechanical corruption of c001",
+   "kind": "fixture",
+   "saw_heldout": false,
+   "saw_boundary": false,
+   "calculus_words": true,
+   "date": "2026-09-27"
+  },
+  "rules": [
+   "D1.const",
+   "D2.var",
+   "D3.add",
+   "D4.mul",
+   "B.bridge",
+   "D5.pow_BROKEN"
+  ],
+  "closure": 1,
+  "budget": 400000,
+  "max_depth": 12,
+  "soundness": {
+   "checked": {
+    "D1.const": 100,
+    "D2.var": 100,
+    "D3.add": 100,
+    "D4.mul": 100,
+    "D5.pow_BROKEN": 100
+   },
+   "unchecked": [
+    "B.bridge"
+   ],
+   "unverified": [],
+   "failures": [
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-1, 3)}: 9 != -9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-3, 2)}: 59049/256 != -1594323/2048"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(-7, 6), 'x': Fraction(3, 2)}: 25/12 != -125/72"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(5, 3)}: 10/3 != 50/9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(2, 1), 'x': Fraction(8, 5)}: -8/25 != 536/125"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(4, 1), 'x': Fraction(7, 2)}: 8 != 51/2"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(7, 2)}: 343/2 != -16807/8"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(5, 3)}: 10/3 != 50/9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-4, 3)}: -8/3 != 32/9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(3, 2)}: 27/4 != 81/8"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(1, 1), 'x': Fraction(6, 1), 'y': Fraction(-1, 1)}: -48 != -288"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(1, 3), 'y': Fraction(-2, 1)}: -47/27 != -53/27"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(-3, 2), 'x': Fraction(8, 3)}: 49/12 != 343/72"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(-5, 2), 'x': Fraction(7, 6), 'y': Fraction(-2, 3)}: 1225/108 != 8575/648"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(5, 6), 'y': Fraction(-1, 1)}: 1/12 != -1/72"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(4, 3), 'y': Fraction(1, 1)}: 8/3 != 32/9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(6, 5)}: 108/25 != 648/125"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(8, 3)}: 64/3 != 512/9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(1, 2), 'y': Fraction(1, 3)}: -8/3 != -4/3"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(2, 5)}: 14/5 != 98/25"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(4, 1)}: 48 != 192"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-2, 3)}: -4/3 != 8/9"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(7, 3), 'x': Fraction(-2, 1)}: -1372/9 != -19208/27"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-8, 1)}: 1176 != -16464"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-1, 1)}: -2 != 2"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(3, 5)}: 27/25 != 81/125"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-6, 5)}: -3/5 != 117/25"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-3, 2)}: 21/4 != -93/8"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(4, 1)}: 7 != 31"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(-9, 1)}: 243 != -2187"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'x': Fraction(4, 1), 'y': Fraction(-1, 1)}: -8 != -32"
+    ],
+    [
+     "D5.pow_BROKEN",
+     "counterexample at {'h': Fraction(1, 1), 'x': Fraction(1, 3)}: 2 != 14/9"
+    ]
+   ]
+  },
+  "training": {
+   "rows": [
+    {
+     "problem": "x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(a + a)"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(2*a^2)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(2*a^2)"
+     }
+    },
+    {
+     "problem": "x^2 at 3",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "18"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "18"
+     }
+    },
+    {
+     "problem": "3x^2 - 5x + 1 at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.7,
+      "answer_ok": true,
+      "answer": "(-5 + (3*a) + (3*a))"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 11,
+      "secs": 0.1,
+      "answer_ok": false,
+      "answer": "(-5 + (6*a^2))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 11,
+      "secs": 0.7,
+      "answer_ok": false,
+      "answer": "(-5 + (6*a^2))"
+     }
+    },
+    {
+     "problem": "x^3 at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.3,
+      "answer_ok": true,
+      "answer": "(a^2 + a^2 + a^2)"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(3*a^3)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(3*a^3)"
+     }
+    },
+    {
+     "problem": "x^3 - 2x at 1",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "1"
+     },
+     "both": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [
+     "x^2 at a",
+     "x^2 at a",
+     "x^2 at 3",
+     "x^2 at 3",
+     "3x^2 - 5x + 1 at a",
+     "3x^2 - 5x + 1 at a",
+     "x^3 at a",
+     "x^3 at a"
+    ],
+    "finishes_base_cannot": [],
+    "base_finishes_cand_cannot": [],
+    "gaps": {
+     "x^2 at a": 4,
+     "x^2 at 3": 3,
+     "3x^2 - 5x + 1 at a": 1,
+     "x^3 at a": 6,
+     "x^3 - 2x at 1": 0
+    },
+    "median_gap": 3
+   }
+  },
+  "heldout": {
+   "rows": [
+    {
+     "problem": "4x - 7 at a",
+     "base": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^2 + x at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(1 + a + a)"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(1 + (2*a^2))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(1 + (2*a^2))"
+     }
+    },
+    {
+     "problem": "2x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (2*a))"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(4*a^2)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(4*a^2)"
+     }
+    },
+    {
+     "problem": "x^2/2 - 3x at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.6,
+      "answer_ok": true,
+      "answer": "(-3 + (1/2*a) + (1/2*a))"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "(-3 + a^2)"
+     },
+     "both": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.5,
+      "answer_ok": false,
+      "answer": "(-3 + a^2)"
+     }
+    },
+    {
+     "problem": "x^2 - 4 at 2",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "8"
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "8"
+     }
+    },
+    {
+     "problem": "x^3 + x^2 at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 9.6
+     },
+     "cand": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "((2*a^2) + (3*a^3))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.2,
+      "answer_ok": false,
+      "answer": "((2*a^2) + (3*a^3))"
+     }
+    },
+    {
+     "problem": "x^3 at -2",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "12"
+     },
+     "cand": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "-24"
+     },
+     "both": {
+      "status": "found",
+      "steps": 4,
+      "secs": 0.0,
+      "answer_ok": false,
+      "answer": "-24"
+     }
+    },
+    {
+     "problem": "2x^3 - 3x^2 + x at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 18.0
+     },
+     "cand": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.1,
+      "answer_ok": false,
+      "answer": "(1 + (-6*a^2) + (6*a^3))"
+     },
+     "both": {
+      "status": "found",
+      "steps": 12,
+      "secs": 19.8,
+      "answer_ok": false,
+      "answer": "(1 + (-6*a^2) + (6*a^3))"
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [
+     "x^2 + x at a",
+     "x^2 + x at a",
+     "2x^2 at a",
+     "2x^2 at a",
+     "x^2/2 - 3x at a",
+     "x^2/2 - 3x at a",
+     "x^2 - 4 at 2",
+     "x^2 - 4 at 2",
+     "x^3 + x^2 at a",
+     "x^3 + x^2 at a",
+     "x^3 at -2",
+     "x^3 at -2",
+     "2x^3 - 3x^2 + x at a",
+     "2x^3 - 3x^2 + x at a"
+    ],
+    "finishes_base_cannot": [
+     "x^3 + x^2 at a",
+     "2x^3 - 3x^2 + x at a"
+    ],
+    "base_finishes_cand_cannot": [],
+    "gaps": {
+     "4x - 7 at a": -1,
+     "x^2 + x at a": 4,
+     "2x^2 at a": 3,
+     "x^2/2 - 3x at a": 2,
+     "x^2 - 4 at 2": 1,
+     "x^3 at -2": 5
+    },
+    "median_gap": 3
+   }
+  },
+  "boundary": null,
+  "triage": {
+   "bucket": "Quarantined",
+   "reason": "unsound: ('D5.pow_BROKEN', \"counterexample at {'x': Fraction(-1, 3)}: 9 != -9\")"
+  }
+ },
+ {
+  "candidate": "c003_additive_only",
+  "name": "FIXTURE: sound but useless (no product or power rule)",
+  "provenance": {
+   "proposer": "fixture -- c001 with two rules deleted",
+   "kind": "fixture",
+   "saw_heldout": false,
+   "saw_boundary": false,
+   "calculus_words": true,
+   "date": "2026-09-27"
+  },
+  "rules": [
+   "D1.const",
+   "D2.var",
+   "D3.add",
+   "B.bridge"
+  ],
+  "closure": 1,
+  "budget": 400000,
+  "max_depth": 12,
+  "soundness": {
+   "checked": {
+    "D1.const": 100,
+    "D2.var": 100,
+    "D3.add": 100
+   },
+   "unchecked": [
+    "B.bridge"
+   ],
+   "unverified": [],
+   "failures": []
+  },
+  "training": {
+   "rows": [
+    {
+     "problem": "x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(a + a)"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "(a + a)"
+     }
+    },
+    {
+     "problem": "x^2 at 3",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "6"
+     }
+    },
+    {
+     "problem": "3x^2 - 5x + 1 at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.7,
+      "answer_ok": true,
+      "answer": "(-5 + (3*a) + (3*a))"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.7,
+      "answer_ok": true,
+      "answer": "(-5 + (3*a) + (3*a))"
+     }
+    },
+    {
+     "problem": "x^3 at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.3,
+      "answer_ok": true,
+      "answer": "(a^2 + a^2 + a^2)"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.3,
+      "answer_ok": true,
+      "answer": "(a^2 + a^2 + a^2)"
+     }
+    },
+    {
+     "problem": "x^3 - 2x at 1",
+     "base": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 8,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "1"
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [],
+    "finishes_base_cannot": [],
+    "base_finishes_cand_cannot": [
+     "x^2 at a",
+     "x^2 at 3",
+     "3x^2 - 5x + 1 at a",
+     "x^3 at a",
+     "x^3 - 2x at 1"
+    ],
+    "gaps": {},
+    "median_gap": null
+   }
+  },
+  "heldout": {
+   "rows": [
+    {
+     "problem": "4x - 7 at a",
+     "base": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 6,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^2 + x at a",
+     "base": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(1 + a + a)"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 10,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "(1 + a + a)"
+     }
+    },
+    {
+     "problem": "2x^2 at a",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (2*a))"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "((2*a) + (2*a))"
+     }
+    },
+    {
+     "problem": "x^2/2 - 3x at a",
+     "base": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.5,
+      "answer_ok": true,
+      "answer": "(-3 + (1/2*a) + (1/2*a))"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 12,
+      "secs": 0.6,
+      "answer_ok": true,
+      "answer": "(-3 + (1/2*a) + (1/2*a))"
+     }
+    },
+    {
+     "problem": "x^2 - 4 at 2",
+     "base": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 7,
+      "secs": 0.0,
+      "answer_ok": true,
+      "answer": "4"
+     }
+    },
+    {
+     "problem": "x^3 + x^2 at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 9.4
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 10.3
+     }
+    },
+    {
+     "problem": "x^3 at -2",
+     "base": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.1,
+      "answer_ok": true,
+      "answer": "12"
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "found",
+      "steps": 9,
+      "secs": 0.2,
+      "answer_ok": true,
+      "answer": "12"
+     }
+    },
+    {
+     "problem": "2x^3 - 3x^2 + x at a",
+     "base": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 17.9
+     },
+     "cand": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 0.0
+     },
+     "both": {
+      "status": "depth_exhausted",
+      "steps": null,
+      "secs": 19.7
+     }
+    }
+   ],
+   "summary": {
+    "wrong_answers": [],
+    "finishes_base_cannot": [],
+    "base_finishes_cand_cannot": [
+     "4x - 7 at a",
+     "x^2 + x at a",
+     "2x^2 at a",
+     "x^2/2 - 3x at a",
+     "x^2 - 4 at 2",
+     "x^3 at -2"
+    ],
+    "gaps": {},
+    "median_gap": null
+   }
+  },
+  "boundary": null,
+  "triage": {
+   "bucket": "Quarantined",
+   "reason": "sound but does not help anywhere"
+  }
  }
 ]

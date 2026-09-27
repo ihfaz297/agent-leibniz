@@ -808,3 +808,68 @@ the two degrees under either rule. **Forfeit:** the threshold "at most one" is s
 number somebody picked, and a degree-3 or degree-4 problem needing two lemmas now sits on
 the wrong side of a line drawn without measuring those degrees. If the bank ever includes
 them, that line needs revisiting before, not after.
+
+---
+
+## 2026-09-27 (night) -- The proposer adapter and the obfuscation layer. Arms 1 and 2 are runnable on a key alone.
+
+**What we tried.** Built the two pieces standing between "we have an API key" and "we
+have results", both stdlib-only so the repo stays dependency-free.
+
+`obfuscate.py` -- the contamination control. Produces the proposer's entire prompt for a
+named arm. Arm 1 (`plain`) keeps the real names and the vocabulary: the ceiling. Arm 2
+(`renamed`) renames the operators (Slope -> GOAL, D -> OP), numbers the rules by position
+(`r1`..`r8`), and -- the part that matters -- **describes every rule only by example**,
+firing it on a sample term and showing before -> after. A rule called "distribute" leaks
+its own semantics; `r1` shown turning `(a + b)*c` into `a*c + b*c` leaks only what it does.
+
+`proposer.py` -- the adapter. Builds the prompt, calls an OpenAI-shaped endpoint over
+`urllib` (DeepSeek by default, `--base-url` for anything else), extracts the fenced
+module, statically audits it, and writes it to `candidates/` alongside the exact prompt
+that produced it. It scores nothing: generation and judgement stay in separate processes,
+which is the rule the design notes insisted on.
+
+**What happened. Three things the tests caught, two of them real bugs in my own work.**
+
+1. **The vocabulary checker caught a genuine leak on first wiring.** The output template
+   told the model to write `from terms import Slope, D`. The import line named the target.
+   Fixed with `opaque_ops.py`, which re-exports only the three semantic names under
+   neutral aliases. This is precisely why the check is *run* rather than trusted -- the
+   leak was in a template nobody would reread.
+2. **Opaque rule names leaked a character of the real ones.** `R1.distribute` became
+   `rr1`, because the displayed name was derived from the real one. Now derived from
+   position alone. Pinned by a test.
+3. **"Never fired on a random term" was being reported as UNSOUND.** It is not: it means
+   the random term generator never produced that rule's shape, which is the normal case
+   for any rule on `Slope` or `D`. A proposer that declares its bridge rule as a pointwise
+   identity -- the real `B` declares `identity=False` -- would have been quarantined as
+   *wrong* while being *correct*. Split into a separate `unverified` list that falls
+   through to the answer-level oracle. **A false rejection is far worse for this
+   experiment than a false pass**, and this bug only produced false rejections.
+
+Also added: a machine-written candidate carries `REVIEWED = False`, and `propose.py`
+**refuses to score it** until a human reads the file and flips the flag. Scoring imports
+and executes the module, so this is the one gate between "a model wrote some Python" and
+"we ran it". Verified end-to-end against a canned reply: refused, then scored after review.
+
+`test_proposer.py`, 14 tests. Suite total 51. CI runs all three.
+
+**What it cost us.**
+
+- *Arm 2 controls vocabulary, not structure.* **Forfeit, and it bounds what a pass there
+  means.** Rule `r7` is the base's own route to a GOAL term, and its demonstration shows
+  `GOAL[x](x^2 % a)` becoming `(h^-1*(...))` -- a difference quotient, recognisable on
+  sight whatever it is called. Withholding it is not an option: it is part of the base and
+  hiding it would misrepresent the system being reasoned about. So arm 2 measures whether
+  the proposer needs the WORDS. It does not measure whether it needs the target to be
+  FAMILIAR. Only arms 3 and 4 do that, and they need the Delta base.
+- *Candidates are executed Python.* **Forfeit:** the FunSearch arrangement, with the
+  obvious risk, mitigated only by the REVIEWED gate and an import allowlist. A declarative
+  rule language would remove the risk and cost about a week.
+- *`saw_heldout: False` is written by the adapter, not proved.* **Forfeit:** it is true by
+  construction today, because the prompt is built from `experiment.PROBLEMS` only and the
+  code is right there to read. But nothing enforces it if someone later edits the prompt
+  builder, and provenance stays self-reported.
+- *No model has been called.* **Forfeit:** every path above was exercised with a canned
+  reply. Real replies will be messier -- prose outside the fence, several blocks, rules
+  that do not typecheck -- and the extraction and audit will need another pass on contact.

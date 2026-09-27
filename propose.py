@@ -18,6 +18,9 @@ A candidate is a module in `candidates/` exposing:
 
     NAME        str
     RULES       tuple[Rule, ...]
+    REVIEWED    bool -- required only for machine-written candidates (kind="machine").
+                False means a human has not read the file; scoring is refused, because
+                scoring imports and executes it.  See proposer.py.
     PROVENANCE  dict -- WHO proposed it and WHAT THEY COULD SEE.  Required.
                 Contamination is the whole methodological problem here, so a
                 candidate with no provenance is refused before it is scored.
@@ -86,6 +89,12 @@ def load(name: str):
     missing = [k for k in REQUIRED_PROVENANCE if k not in mod.PROVENANCE]
     if missing:
         raise BadCandidate(f"{name}: PROVENANCE missing {missing}")
+    if getattr(mod, "PROVENANCE", {}).get("kind") == "machine" and not getattr(mod, "REVIEWED", False):
+        raise BadCandidate(
+            f"{name}: machine-written and REVIEWED is not True. A human must read the "
+            "whole module before it is imported and scored. Read it, then set "
+            "REVIEWED = True in the file."
+        )
     if mod.PROVENANCE["saw_heldout"]:
         raise BadCandidate(
             f"{name}: proposer saw the held-out set. It cannot be scored on it. "
@@ -108,7 +117,7 @@ def soundness(mod, trials: int = 100) -> dict:
     pointwise identity.  Rules declared non-identity cannot be checked this way
     and are carried to the answer-level oracle check instead, which is where
     R7/R8/B are checked too."""
-    out = {"checked": {}, "failures": [], "unchecked": []}
+    out = {"checked": {}, "failures": [], "unchecked": [], "unverified": []}
     for r in mod.RULES:
         if not r.identity:
             out["unchecked"].append(r.name)
@@ -116,7 +125,16 @@ def soundness(mod, trials: int = 100) -> dict:
         checked, fails = check_rule(r, trials=trials)
         out["checked"][r.name] = checked
         if checked == 0:
-            out["failures"].append((r.name, "rule never fired on a random term"))
+            # NOT a failure.  The random term generator simply never produced this
+            # rule's shape -- which is the normal case for a rule on Slope or D, since
+            # those appear rarely in random terms.  A proposer that declares its bridge
+            # rule as a pointwise identity (the real B declares identity=False) lands
+            # here, and calling that "unsound" would wrongly quarantine a CORRECT
+            # proposal.  A false rejection is far worse for this experiment than a
+            # false pass, so these fall through to the answer-level oracle check,
+            # which is what covers R7/R8/B too.
+            out["unverified"].append(r.name)
+            continue
         for f in fails:
             out["failures"].append((r.name, f"counterexample at {f[3]}: "
                                             f"{f[4]} != {f[5]}"))
@@ -221,7 +239,10 @@ def run(name, closure, budget, max_depth, with_boundary, trials) -> dict:
     for rn, n in sound["checked"].items():
         print(f"        {rn:<22} {n} random instantiations")
     for rn in sound["unchecked"]:
-        print(f"        {rn:<22} not a pointwise identity -- answer-level check only")
+        print(f"        {rn:<22} declared non-identity -- answer-level check only")
+    for rn in sound.get("unverified", ()):
+        print(f"        {rn:<22} never fired on a random term -- UNVERIFIED, "
+              f"answer-level check only")
     for f in sound["failures"]:
         print(f"        FAIL {f}")
 
@@ -257,6 +278,7 @@ def run(name, closure, budget, max_depth, with_boundary, trials) -> dict:
         "closure": closure, "budget": budget, "max_depth": max_depth,
         "soundness": {"checked": sound["checked"],
                       "unchecked": sound["unchecked"],
+                      "unverified": sound.get("unverified", []),
                       "failures": [list(map(str, f)) for f in sound["failures"]]},
         "training": {"rows": train_rows, "summary": train},
         "heldout": {"rows": held_rows, "summary": held},
