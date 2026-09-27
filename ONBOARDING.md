@@ -104,6 +104,7 @@ chat log. If a plan lives only in a chat window, it is not the plan.
 | `CLAUDE.md` | The plan and the hard rules. Doubles as instructions for AI assistants working in the repo. |
 | `LEDGER.md` | Append-only. One entry per cycle: what we tried, what happened, **what it cost us**. That third thing is the point — every design choice gives something up, and we write the sacrifice down while making it, not months later. This file becomes the paper's limitations section. |
 | `ONBOARDING.md` | This file. |
+| `NEXT.md` | What to do next, and which parts cost money (almost none of it does). Read after this. |
 | `track1/` | The Lean spike. Not Track 1 yet. |
 | `FIRST_MISSIONS.txt.txt` | The original two-week plan. Partly superseded, but useful for its instinct about which task can return an answer you do not want. |
 | `schizophrenic-conversations.txt` | The design conversation the project came out of. Long, but every constraint in CLAUDE.md traces back to it. Worth an hour. |
@@ -324,5 +325,7 @@ edit `heldout.py`, or add a dependency without asking.
 4. Read the "Non-negotiable constraints" section of `CLAUDE.md`. Four items, each
    there because breaking it would silently invalidate a result.
 5. Pick something from §7, and put a line in the ledger when it produces a number.
+
+Then read `NEXT.md` for what to actually pick up.
 
 If something in here is wrong, fix it and push. A stale manual is worse than none.
