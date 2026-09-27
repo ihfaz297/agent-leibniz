@@ -100,6 +100,14 @@ candidates/    candidate abstractions, one module each.  c001 is the contaminati
 test_track0.py 25 tests; run before every ledger entry
 test_propose.py 12 tests for the loop's referees and triage
 graveyard/     quarantined plans and documents, each with a header saying why
+track1/        the Lean spike.  RingSpike.lean is byte-identical to the file that
+               compiled; README.md holds the results table AND THE VERSION PIN --
+               Lean v4.34.1, mathlib d13f23b (2026-09-24).  Pin those on any rebuild:
+               `lake new spike math` on a later date pulls current mathlib and the
+               file will not necessarily compile (one deprecation already surfaced).
+               The generated spike/ tree is gitignored and was deleted 2026-09-27 to
+               reclaim 6.6 GB; nothing unique was in it, but rebuilding means
+               redownloading mathlib (hours on a slow link).
 ```
 
 **What Track 0 found (2026-09-12, see LEDGER.md).** The per-problem step-count gap is a
