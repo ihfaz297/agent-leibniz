@@ -174,6 +174,21 @@ neither is a substitute for reading it.
 
 ---
 
+## The v2 target, so nobody proposes a worse one
+
+**Two-step compounding.** An abstraction whose payoff depends on an earlier abstraction
+already being Kept. Nobody has demonstrated it, it is the difference between "discover a
+concept" and "discover a theory", and the mechanism is a few lines -- score a candidate
+against `BASE_RULES + kept` rather than `BASE_RULES`.
+
+Do not build it yet. It measures nothing until two genuinely *proposed* abstractions exist
+to compound, and right now there is one Kept candidate and it is the contamination ceiling.
+A plausible first test once the Delta base lands: does a second-difference abstraction
+compound on a first-difference one?
+
+This is the answer to "what is after v1", and it is a better answer than "more problems".
+It is also the only item on the v2 list -- population search, MCTS and RL are still out.
+
 ## What costs money, and what it buys
 
 Only one thing: a frontier model as the proposer, via API. It buys a stronger arm 3 —

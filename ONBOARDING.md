@@ -92,6 +92,16 @@ thing you can do this week** — see §7.
 was written by hand, and no model has ever been called. Do not let anyone — us included —
 call this an AI discovering things yet.
 
+**Two limits on what a success here would even mean.** They are in CLAUDE.md under "One
+abstraction at a time"; know them before you describe this project to anyone.
+*(a)* There is **no library** — a candidate is scored against the base, never against the
+base plus an abstraction already Kept, so the repo cannot detect an abstraction that only
+pays off because an earlier one exists. That is the gap between "discover a concept" and
+"discover a theory". *(b)* Both our targets are the **same abstraction shape**: introduce
+a small or discrete increment, then take a limit or a sum. Leibniz, Riemann and Planck all
+made that one move. Succeed here and you have shown the loop finds abstractions of *that
+shape*, not abstractions in general.
+
 **The failure mode most likely to kill us** is drift, not maths: four people, several AI
 chat sessions, a new plan weekly. Hence the rule: CLAUDE.md is the plan, LEDGER.md is the
 record, everything else is a chat log. A plan that lives only in a chat window is not the
@@ -125,6 +135,7 @@ plan.
 | `proposer.py` | Calls a model, extracts the module, audits it, writes it to `candidates/`. Scores nothing — generation and judgement stay separate. `--dry-run` needs no key. |
 | `opaque_ops.py` | Neutral re-exports, so a renamed prompt can say what to import without naming the target. Exists because `from terms import Slope` leaked the answer in an import line. |
 | `test_track0.py`, `test_propose.py`, `test_proposer.py` | 25 + 12 + 24 tests. Run before every ledger entry. |
+| `check_claims.py` | Checks that every capability `CLAUDE.md` *claims* is actually in the code. Exists because the document promised a library of kept abstractions for a month and no library was ever written. Add a check whenever CLAUDE.md claims something new. |
 
 ### Documents
 

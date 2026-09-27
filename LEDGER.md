@@ -966,3 +966,65 @@ everything between. It is a necessary condition dressed as a stopping rule, and 
 person should sanity-check the whole bank rather than just those two rows. Bought: a
 designer who would otherwise have iterated to taste now has a line to stop at, and the
 freeze protocol makes the iteration itself defensible.
+
+---
+
+## 2026-09-27 (late) -- Two limits the owner found that we had written around.
+
+**What we tried.** Nothing ran. The owner asked whether the three base-rule tests were the
+whole driving force of the project, and whether it could handle multi-step abstraction of
+the kind Wiles needed for Fermat. Checking the first claim exposed something worse than a
+philosophical gap.
+
+**1. CLAUDE.md promised a library that does not exist.** The Kept bucket read: "Goes into
+the library so the next abstraction can build on it." `grep` finds no library, no
+accumulation, nothing. `propose.py` scores every candidate against `BASE_RULES` alone.
+**The project is structurally single-step**, and the governing document said otherwise for
+a month.
+
+This is not a missing nice-to-have. The claimed intellectual lineage is DreamCoder, which
+is *entirely* library learning -- abstractions built on abstractions. The August design
+ladder put "discover a theory" above "discover a concept" with compounding as the
+difference. So the missing library is precisely the gap between the rung we can measure and
+the rung we have been describing as the goal.
+
+Fixed the document, not the code: the Kept bucket now states plainly that there is no
+library and that the project is single-step. The mechanism is a few lines (score against
+`BASE_RULES + kept`) but it is meaningless until two genuinely proposed abstractions exist
+to compound, and there is one Kept candidate and it is the contamination ceiling. Two-step
+compounding is recorded as the v2 target. Wiles-scale is recorded as not on any roadmap,
+because it is not, and pretending otherwise is how the project gets dismissed.
+
+**2. We test exactly one abstraction SHAPE, and this bounds what winning means.** Both
+targets -- `d/dx` and Delta -- are the same move: introduce a small or discrete increment,
+then take a limit or a sum. The owner's observation, and it is a good one: Planck's
+`epsilon = h nu` was that same trick, a counting device inside an entropy sum that turned
+out to be physical. So were Leibniz's `dx` and Riemann's sums.
+
+Historically that shape is the productive one, so testing it is not arbitrary. But if the
+loop succeeds, what has been shown is that it finds abstractions *of that shape*. Galois
+theory, homology, anything category-shaped: none look like it. A reader is entitled to ask
+whether the loop finds any other kind, and the honest answer is that we did not test it.
+
+**Why this entry matters more than most.** Every other limitation in this ledger bounds
+what a *failure* would mean. These two bound what a *success* would mean, which is the
+rarer and more damaging kind, and neither of us noticed until the owner asked.
+
+**What it cost us.**
+
+- *Fixing the document rather than building the library.* **Forfeit:** the repo now openly
+  admits it cannot do the thing its own ladder calls the goal. That is a worse-looking
+  README and a more defensible one. Building the mechanism against a single ceiling
+  candidate would have produced a demo, not a measurement.
+- *The one-shape limitation has no mitigation on offer.* **Forfeit:** we cannot cheaply add
+  a structurally different target -- a second abstraction shape means a second base theory,
+  which is most of the project again. So this stays a stated limitation rather than
+  something we fix, and any claim about generality has to be scoped to increment-shaped
+  abstractions.
+- *Both were found by a question, not by a test.* **Forfeit:** there is no mechanism in this
+  repo that catches a document promising something the code does not do. A `grep` for
+  every capability CLAUDE.md claims would have caught the library in one line, and nobody
+  ran it. **Now there is one:** `check_claims.py` pairs each capability the document claims
+  with a grep that must find evidence of it, plus a rule that "goes into the library" may
+  appear only alongside "there is no library". CI runs it. It would have caught this in
+  one second, a month ago.

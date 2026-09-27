@@ -29,6 +29,7 @@ jobs:
       - run: python test_track0.py
       - run: python test_propose.py
       - run: python test_proposer.py
+      - run: python check_claims.py
 
   boundary:
     if: github.event_name == 'workflow_dispatch'

@@ -113,7 +113,10 @@ proposer.py    model -> candidate module.  stdlib urllib, DeepSeek by default.  
 opaque_ops.py  neutral re-exports so a prompt can say what to import without naming
                the target (`from terms import Slope` leaked the answer in the import)
 test_propose.py 12 tests for the loop's referees and triage
-test_proposer.py 14 tests for the arms, extraction, the audit and the review gate
+test_proposer.py 24 tests for the arms, extraction, the audit and the review gate
+check_claims.py every capability this file CLAIMS, paired with a grep that must find it
+               in the code.  Exists because this file promised a library of kept
+               abstractions for a month and no library was ever written.  CI runs it
 graveyard/     quarantined plans and documents, each with a header saying why
 track1/        the Lean spike.  RingSpike.lean is byte-identical to the file that
                compiled; README.md holds the results table AND THE VERSION PIN --
@@ -211,12 +214,49 @@ Ask these before adding anything to the bank.
 
 ## Triage: every candidate lands in exactly one bucket
 
-- **Kept** — verifier accepted, held-out step count dropped. Goes into the library so
-  the next abstraction can build on it.
+- **Kept** — verifier accepted, and it helps on held-out problems it was never selected
+  against. **NOTE (2026-09-27): there is no library.** An earlier version of this line
+  promised that a Kept candidate "goes into the library so the next abstraction can build
+  on it". No such mechanism exists -- `propose.py` scores every candidate against
+  `BASE_RULES` alone, never against the base plus previously-kept abstractions. So this
+  project is currently **single-step only**. See "One abstraction at a time" below.
 - **Quarantined** — interesting but unsound, or compressed on training and not held-out.
   Do not delete. This is where the historically interesting cases live.
 - **Fatal** — the failure was structural, not about this candidate. Base theory made
   problems unstatable, or the metric could not discriminate. Goes back to base design.
+
+## One abstraction at a time, and one abstraction SHAPE
+
+Two limits on what this project can currently claim. Both were found by a question from
+the owner rather than by us, and both bound what a *success* would mean -- not just what a
+failure would mean.
+
+**1. Single-step only. There is no library.** `propose.py` scores a candidate against the
+base. It cannot score a candidate against the base *plus* an abstraction already Kept, so
+it cannot detect an abstraction whose payoff depends on an earlier one existing. That is
+the difference between "discover a concept" and "discover a theory", and it is the
+mechanism DreamCoder -- the lineage this project claims -- is entirely built around.
+
+The fix is cheap in code and premature in science: scoring against `BASE_RULES + kept`
+is a few lines, but it means nothing until there are two genuinely proposed abstractions
+to compound, and there is currently one Kept candidate and it is the contamination
+ceiling. **Two-step compounding is the right v2 target**, and it is stronger than "more
+problems" -- nobody has demonstrated it.
+
+What is NOT on any roadmap: anything of the shape of Wiles on Fermat. That is decades of
+human theory-building across several fields. Saying otherwise is how a project gets
+dismissed in the first paragraph.
+
+**2. We test exactly one abstraction shape.** Both targets -- `d/dx` and the Delta
+operator -- are the same move: *introduce a small or discrete increment, then take a limit
+or a sum.* Leibniz's `dx`, Riemann's sums, and Planck's `epsilon = h nu` are all that move;
+Planck's was explicitly a counting device in an entropy sum that turned out to be physical.
+
+Historically that shape is the productive one, so testing it is not arbitrary. But it is
+**one** shape. Galois theory, homology, and anything category-shaped do not look like it.
+So if the loop succeeds here, what has been shown is that it can find abstractions *of
+this shape* -- and a reader is entitled to ask whether the loop would find any other kind.
+We do not know, and the honest answer in a paper is that we did not test it.
 
 ## Ledger
 
